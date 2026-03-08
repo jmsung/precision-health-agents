@@ -1,6 +1,40 @@
 # Architecture
 
-## Pipeline
+## Core Pipeline: DNA-Precision Diabetes Decision
+
+The primary use case is a two-stage sequential pipeline: DNA assessment first, then clinical assessment. The genomics result informs and can override the clinical result.
+
+```
+Patient
+   │
+   ├─── DNA Sequence ──▶ [Genomics Agent] ──▶ DMT1 / DMT2 / NONDM
+   │                                                  │
+   │                                    ┌─────────────┴──────────────┐
+   │                                 High risk                   No risk (NONDM)
+   │                                    │                            │
+   ├─── Clinical Chat ──▶ [Doctor Agent] ──▶ Diabetic / Non-Diabetic  │
+   │         (8 features gathered                   │               │
+   │          through conversation)                 │               │
+   │                                    ┌───────────┴───────────┐   │
+   │                                 Diabetic             Non-Diabetic
+   │                                 + High DNA risk       + No DNA risk
+   │                                    │                       │
+   │                              → Hospital              → Reconsider
+   │                                    │                  (may not need drugs)
+   │                         ┌──────────┴──────────┐
+   │                       DMT1                   DMT2
+   │                         │                      │
+   │                    Insulin therapy        Metformin / GLP-1
+   │                    (Type 1 drugs)         (Type 2 drugs)
+   │
+   └─── (Background) ──▶ [Transcriptomics, Proteomics, Pharma, Clinical, Literature]
+                                          │
+                                    Synthesis (Claude Opus)
+                                          │
+                                    Unified Health Report
+```
+
+## Full Multi-Agent Pipeline
 
 ```
 Patient Case → Orchestrator → [6 Agents in Parallel] → Blackboard → Synthesis → Report
@@ -12,46 +46,43 @@ Patient Case → Orchestrator → [6 Agents in Parallel] → Blackboard → Synt
                                                               Dashboard (Streamlit)
 ```
 
-```
-Patient Query + Health Profile
-        │
-        ▼
-  ┌─────────────┐
-  │ Orchestrator │
-  └─────┬───────┘
-        │ (concurrent)
-  ┌─────┼─────────────────────────────┐
-  │     │     │      │      │         │
-  ▼     ▼     ▼      ▼      ▼         ▼
-Genomics  Transcr  Proteo  Pharma  Clinical  Literature
-  │     │     │      │      │         │
-  └─────┼─────────────────────────────┘
-        │
-        ▼
-  ┌─────────────┐
-  │  Aggregator  │
-  │  (Claude)    │
-  └─────────────┘
-        │
-        ▼
-  Structured Report
-  - Risk signals
-  - Preventive strategies
-  - Lifestyle recommendations
-  - Clinical referral flags
-  - Citations
-```
-
 ## Specialized Agents
 
-| Agent | Tools | Backend |
-|-------|-------|---------|
-| **Genomics** | `classify_dna`, `lookup_variant`, `search_clinvar`, `get_gene_summary` | Pre-trained CNN (diabetes), myvariant.info, Biopython Entrez |
-| **Transcriptomics** | `run_gsea`, `classify_subtype` | GSEApy, PAM50 rules |
-| **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB |
-| **Pharmacology** | `search_drug_gene_interactions`, `search_adverse_effects` | DGIpy, OpenFDA |
-| **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base |
-| **Literature** | `search_pubmed`, `search_semantic_scholar` | Biopython Entrez, semanticscholar |
+| Agent | Tools | Backend | Role in Diabetes Pipeline |
+|-------|-------|---------|--------------------------|
+| **Genomics** | `classify_dna` | Pre-trained 2-layer CNN (3-mer tokenization) | Genetic predisposition: DMT1/DMT2/NONDM |
+| **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake → hospital/health trainer routing |
+| **Transcriptomics** | `run_gsea`, `classify_subtype` | GSEApy | Gene expression signals for progression |
+| **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB | Biomarker inference |
+| **Pharmacology** | `search_drug_gene_interactions`, `search_adverse_effects` | DGIpy, OpenFDA | DNA-matched drug recommendations |
+| **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base | Evidence-based guideline interpretation |
+| **Literature** | `search_pubmed`, `search_semantic_scholar` | Biopython Entrez, semanticscholar | Latest research on DNA-matched treatment |
+
+### Doctor Agent: Conversational Clinical Intake
+
+Unlike the other agents which receive structured input, the Doctor Agent gathers data through natural conversation:
+
+```
+Patient speaks freely:
+  "I'm 42, female, my glucose was 160 last week, 85kg at 165cm,
+   pregnant twice, my mom has diabetes, I don't know my insulin."
+
+Doctor Agent extracts:
+  pregnancies=2, glucose=160, blood_pressure=80, skin_thickness=28,
+  insulin=0, bmi=31.2, diabetes_pedigree_function=0.5, age=42
+
+Calls: classify_diabetes(**extracted_values)
+Returns: DoctorFindings(prediction, probability, risk_level, recommendation)
+```
+
+Recommendation logic (combined with genomics):
+
+| Genomics | Clinical | Decision |
+|---|---|---|
+| DMT1 or DMT2 | Diabetic | → Hospital (confirmed) |
+| DMT1 or DMT2 | Non-Diabetic | → Hospital (genetic override — early intervention) |
+| NONDM | Diabetic | → Reconsider (may not need drugs) |
+| NONDM | Non-Diabetic | → Health trainer (prevention) |
 
 All tools: **on-device or free API calls** — no GPU, no paid APIs beyond Claude.
 

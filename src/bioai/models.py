@@ -33,6 +33,19 @@ class GenomicsFindings(BaseModel):
     interpretation: str
 
 
+class Recommendation(str, Enum):
+    HOSPITAL = "hospital"
+    HEALTH_TRAINER = "health_trainer"
+
+
+class DoctorFindings(BaseModel):
+    prediction: Literal["Diabetic", "Non-Diabetic"]
+    probability: float
+    risk_level: RiskLevel
+    recommendation: Recommendation
+    reasoning: str
+
+
 # ---------------------------------------------------------------------------
 # Generic agent result — wraps any agent's findings
 # ---------------------------------------------------------------------------
@@ -40,7 +53,7 @@ class GenomicsFindings(BaseModel):
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | None = None  # extend as other agents are added
+    findings: GenomicsFindings | DoctorFindings | None = None
     summary: str
     error: str | None = None
 

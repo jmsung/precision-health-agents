@@ -20,7 +20,7 @@ bioai/
 - **Team**: JS (top-down: infra, orchestration, architecture), YH (bottom-up: data pipeline, tools, agents, testing)
 - **Workflow**: Parallel worktrees per task, rebase-and-merge to main
 - **Memory banks**: Each developer has `mb_js/` or `mb_yh/` (gitignored) for local task tracking
-- **Merge protocol**: Coordinate verbally → rebase → `git merge --ff-only` → push → other rebases
+- **Merge protocol**: rebase → `git push origin <branch>:main` → tell teammate → they rebase
 
 ## Key References
 

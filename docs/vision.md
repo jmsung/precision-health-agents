@@ -12,43 +12,51 @@ Standard diabetes diagnosis relies entirely on clinical measurements — blood g
 
 Both failures are costly. One wastes money. The other costs health.
 
-## The Solution: DNA-Level Precision Medicine
+## The Solution: 3-Layer Precision Validation
 
-BioAI adds a genomic layer on top of clinical assessment. By classifying a patient's DNA alongside their clinical measurements, the system can:
+BioAI uses **three independent evidence sources** to confirm or reject a diabetes diagnosis, catching false positives before unnecessary medication:
 
-1. **Confirm or override clinical predictions** with genetic evidence
-2. **Differentiate treatment** based on whether the patient is DMT1 or DMT2
-3. **Flag asymptomatic high-risk patients** before disease onset
-4. **Prevent unnecessary treatment** for patients with no genetic predisposition
+1. **Layer 1 — DNA (Genomics Agent)**: Classify genetic predisposition (DMT1/DMT2/NONDM)
+2. **Layer 2 — Clinical (Doctor Agent)**: Conversational intake → diabetes probability from clinical features
+3. **Layer 3 — Molecular (Transcriptomics Agent)**: Gene expression pathway analysis confirms or rejects at the molecular level
+
+Each layer independently evaluates the patient. Only when all three agree does the patient proceed to medication. If the transcriptomic layer finds no diabetes pathway activation despite positive DNA + clinical signals, the patient is rerouted to lifestyle intervention — avoiding unnecessary drugs.
 
 This is the core value of precision medicine: the right decision, for the right patient, based on who they actually are at the molecular level.
 
-## The Two-Agent Flow
+## The 3-Layer Validation Flow
 
 ```
-[Genomics Agent]                    [Doctor Agent]
-  DNA sequence                        Clinical conversation
-       │                                     │
-  classify_dna                     classify_diabetes (MLP)
-       │                                     │
-  DMT1 / DMT2 / NONDM              Diabetic / Non-Diabetic
-       │                                     │
-       └──────────────┬──────────────────────┘
-                      │
-              [Unified Decision]
-                      │
-          ┌───────────┴───────────┐
-     High genetic risk        No genetic risk
-     + clinical positive      + clinical positive
-          │                        │
-     Go to hospital           Reconsider diagnosis
-     (confirmed diabetes)     (may not need drugs)
-          │
-     ┌────┴────┐
-   DMT1       DMT2
-     │           │
-  Insulin     Metformin /
-  therapy     GLP-1 agonists
+[Layer 1: Genomics]         [Layer 2: Doctor]         [Layer 3: Transcriptomics]
+  DNA sequence                Clinical conversation     Gene expression (110 genes)
+       |                           |                          |
+  classify_dna              classify_diabetes           analyze_gene_expression
+       |                           |                          |
+  DMT1 / DMT2 / NONDM      Diabetic / Non-Diabetic     5 pathway scores
+       |                           |                          |
+       +-------------+------------+                          |
+                     |                                        |
+             [Initial Decision]                               |
+                     |                                        |
+         +----------+----------+                              |
+    High genetic risk      No genetic risk                    |
+    + clinical positive    + clinical positive                |
+         |                      |                             |
+    Go to hospital         Health trainer                     |
+         |                 (lifestyle first)                  |
+         |                                                    |
+         +----------------------------------------------------+
+         |
+   [Molecular Confirmation]
+         |
+    +----+----+
+  Confirmed    NOT confirmed
+  (pathways    (no pathway
+   active)      activation)
+    |               |
+  Pharmacology   Health Trainer
+  (drugs)        (false positive --
+                  no drugs needed)
 ```
 
 ## Drug Differentiation by DNA
@@ -64,10 +72,11 @@ Giving a Type 2 drug to a Type 1 patient, or vice versa, is at best ineffective 
 
 ## Why This Matters
 
-- **Patients save money** — no unnecessary drugs for the genetically non-predisposed
+- **Patients save money** — no unnecessary drugs for the genetically non-predisposed or molecularly unconfirmed
+- **False positives caught** — transcriptomic validation prevents premature medication when gene expression doesn't support the diagnosis
 - **Early intervention works** — catch DMT2 patients before clinical symptoms appear
-- **Treatment is precise** — DNA-matched drugs are more effective and safer
-- **Doctors get a second opinion** — AI-backed genomic evidence, not just clinical intuition
+- **Treatment is precise** — DNA-matched + subtype-informed drugs are more effective and safer
+- **Doctors get a triple check** — DNA, clinical, and molecular evidence, not just clinical intuition
 
 ## Specialized Agents
 
@@ -75,7 +84,7 @@ Giving a Type 2 drug to a Type 1 patient, or vice versa, is at best ineffective 
 |---|---|
 | **Genomics** | DNA classification (DMT1/DMT2/NONDM) — genetic predisposition layer |
 | **Doctor** | Conversational clinical intake → diabetes probability → hospital/health trainer routing |
-| **Transcriptomics** | Gene expression signals for disease progression |
+| **Transcriptomics** | 3rd validation layer — confirms/rejects diabetes at molecular level, filters false positives |
 | **Proteomics** | Biomarker inference |
 | **Pharmacology** | Drug-gene interaction reasoning — DNA-matched drug recommendations |
 | **Clinical Guidelines** | Evidence-based guideline interpretation |

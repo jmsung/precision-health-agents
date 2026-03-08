@@ -50,6 +50,25 @@ class DoctorFindings(BaseModel):
 # Generic agent result — wraps any agent's findings
 # ---------------------------------------------------------------------------
 
+class TranscriptomicsRecommendation(str, Enum):
+    PHARMACOLOGY = "pharmacology"
+    HEALTH_TRAINER = "health_trainer"
+
+
+class TranscriptomicsFindings(BaseModel):
+    pathway_scores: dict[str, float]
+    dominant_pathway: str
+    active_pathways: list[str]
+    risk_level: RiskLevel
+    dysregulated_genes: list[dict[str, Any]]
+    diabetes_confirmed: dict[str, Any]
+    diabetes_subtype: dict[str, str]
+    complication_risks: list[dict[str, str]]
+    monitoring: dict[str, Any]
+    recommendation: TranscriptomicsRecommendation
+    interpretation: str
+
+
 class HealthTrainerFindings(BaseModel):
     fitness_level: Literal["beginner", "intermediate", "advanced"]
     goals: list[str]
@@ -60,7 +79,7 @@ class HealthTrainerFindings(BaseModel):
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | DoctorFindings | HealthTrainerFindings | None = None
+    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | HealthTrainerFindings | None = None
     summary: str
     error: str | None = None
 

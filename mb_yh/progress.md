@@ -2,6 +2,12 @@
 
 ## Active
 
+### Hospital Pathway (feat/hospital-agent branch)
+- [x] TranscriptomicsAgent — gene expression pathway analysis + subtype + complications + monitoring
+- [x] Diabetes confirmation / false positive filter — confirms or rejects diabetes at molecular level, routes to pharmacology or health_trainer
+- [x] Updated all docs (architecture, transcriptomics, vision, demo, progress) with 3-layer validation
+- [ ] PharmacologyAgent — subtype-informed medication selection (next)
+
 ## Hold
 
 ## Todo
@@ -15,7 +21,7 @@
 ### Phase 2: Tools (all 6 domains)
 - [x] `tools/dna_classifier.py` — pre-trained 2-layer CNN (3-mer tokenization) for diabetes DNA classification (DMT1/DMT2/NONDM)
 - [ ] `tools/genomics_tools.py` — myvariant.info, ClinVar Entrez (+ unit tests)
-- [ ] `tools/transcriptomics_tools.py` — GSEApy pathway enrichment
+- [x] `tools/gene_expression_analyzer.py` — GSE26168 z-score pathway analysis + subtype classification + complication risks
 - [ ] `tools/proteomics_tools.py` — UniProt REST API
 - [ ] `tools/pharma_tools.py` — DGIpy, OpenFDA, ChEMBL
 - [ ] `tools/clinical_tools.py` — JSON knowledge base
@@ -25,7 +31,7 @@
 ### Phase 3: Agent Implementations
 - [x] **Doctor** agent — conversational intake → classify_diabetes tool → hospital/health_trainer recommendation
 - [ ] **Genomics** agent — wire tools + system prompt
-- [ ] **Transcriptomics** agent — wire tools + system prompt
+- [x] **Transcriptomics** agent — gene expression pathway analysis + subtype + complications + monitoring (27 tests)
 - [ ] **Proteomics** agent — wire tools + system prompt
 - [ ] **Pharmacology** agent — wire tools + system prompt
 - [ ] **Clinical Guidelines** agent — wire tools + system prompt
@@ -93,3 +99,19 @@
   - `test_return_shape` — output has correct keys
   - `test_probability_range` — probability in [0, 1]
   - `test_risk_level_thresholds` — low/high risk boundaries correct
+
+### Transcriptomics (hospital pathway)
+- [x] `data/transcriptomics/` — GSE26168 blood transcriptome (24 samples: 8 control, 7 IFG, 9 T2DM)
+- [x] `data/transcriptomics/raw/diabetes_transcriptomics.csv` — processed 24 samples × 117 features (110 genes + 5 pathway scores)
+- [x] `scripts/process_transcriptomics.py` — data download + processing pipeline
+- [x] `src/bioai/tools/gene_expression_analyzer.py` — `analyze_gene_expression()` tool: z-score pathway scoring, diabetes subtype classification, complication risk flags, monitoring recommendation
+- [x] `src/bioai/agents/transcriptomics.py` — TranscriptomicsAgent (tool-use loop, context from genomics/doctor)
+- [x] `src/bioai/prompts/transcriptomics.txt` — system prompt with pathway interpretation guidelines
+- [x] `src/bioai/models.py` — added TranscriptomicsFindings (pathway_scores, subtype, complications, monitoring)
+- [x] `tests/test_gene_expression_analyzer.py` — 28 tests (pathways, subtypes, complications, monitoring, diabetes confirmation, false positive filter, reference data)
+- [x] `tests/test_transcriptomics_agent.py` — 5 tests (tool call, context, error handling, types)
+- [x] `docs/transcriptomics.md` — full implementation doc with false positive filter, diabetes confirmation
+- [x] Updated `docs/architecture.md` — 3-layer validation pipeline, hospital pathway diagram, agents table
+- [x] Updated `docs/vision.md` — 3-layer validation story, transcriptomics as third validator
+- [x] Updated `docs/demo.md` — added transcriptomics false positive demo case (Case 4)
+- [x] Updated `docs/data.md` — added transcriptomics dataset

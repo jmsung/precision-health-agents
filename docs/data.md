@@ -8,6 +8,7 @@
 | Clinical | Pima Indians Diabetes (Kaggle) | `data/diabetes/` | MLP clinical diabetes prediction (8 features) |
 | Exercise | Best 50 Exercises (Kaggle) | `data/exercises/` | Exercise recommendation lookup |
 | Fitness | Gym Members Exercise Dataset (Kaggle) | `data/gym_members/` | Health trainer evaluation + future ML |
+| Transcriptomics | GSE26168 Blood Transcriptome (GEO) | `data/transcriptomics/` | Gene expression pathway analysis (110 genes, 24 samples) |
 | Genomics | ClinVar `variant_summary.txt` (~50MB) | `data/clinvar/` | Variant → disease lookup |
 | Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | `data/metabric/` | Mutations + mRNA z-scores + clinical |
 | Pharmacology | PharmGKB clinical annotations | `data/pharmgkb/` | Drug-gene associations |
@@ -61,6 +62,29 @@ Source: [Kaggle — valakhorasani/gym-members-exercise-dataset](https://www.kagg
 Key columns: Age, Gender, Weight (kg), Height (m), BMI, Workout_Type (Cardio/Strength/Yoga/HIIT), Experience_Level (1/2/3), Workout_Frequency (days/week), Session_Duration (hours)
 
 Used for: 3-layer health trainer evaluation (`scripts/evaluate_health_trainer.py`) — experience level accuracy, workout type baseline, clinical constraint verification. Future: demographic ML model to improve workout type scoring.
+
+### Diabetes Transcriptomics Dataset (`data/transcriptomics/`)
+
+Source: [GEO GSE26168](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE26168) — "Type 2 Diabetes mellitus: mRNA and miRNA profiling"
+Platform: GPL6883 (Illumina HumanRef-8 v3.0 expression bead chip)
+
+| File | Description |
+|------|-------------|
+| `raw/GSE26168_series_matrix.txt` | Full expression matrix (24,526 probes × 24 samples) |
+| `raw/GPL6883_probe_gene_map.tsv` | Probe-to-gene symbol annotation |
+| `raw/diabetes_transcriptomics.csv` | Processed: 24 samples × 117 features (110 genes + 5 pathway scores + 2 metadata) |
+
+Samples: 8 control, 7 IFG (impaired fasting glucose), 9 T2DM
+Tissue: peripheral blood
+
+110 genes curated across 5 diabetes-relevant pathway panels:
+- Beta cell stress (20 genes): INS, PDX1, GCK, TCF7L2, ABCC8...
+- Inflammation/immune (25 genes): TNF, IL6, IL1B, TLR4, NLRP3...
+- Insulin resistance (25 genes): INSR, IRS1, AKT1, PPARG, FOXO1...
+- Fibrosis/ECM (21 genes): COL1A1, TGFB1, MMP9, FN1, VIM...
+- Oxidative/mitochondrial (22 genes): SOD2, GPX1, SIRT1, UCP2, NFE2L2...
+
+Processing script: `scripts/process_transcriptomics.py`
 
 ## Patient Cases
 

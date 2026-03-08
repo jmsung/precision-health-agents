@@ -15,12 +15,13 @@ We show two patients with the same clinical reading — and completely different
 1. **(15s) Problem** — Doctors diagnose diabetes from blood tests alone. But two patients with identical glucose and BMI can have completely different futures. DNA changes everything.
 
 2. **(60s) Live Demo** — Two patients, same clinical numbers, different DNA:
-   - Patient A: Clinical positive + DMT2 DNA → confirmed → hospital → Type 2 drugs
+   - Patient A: Clinical positive + DMT2 DNA + active pathways → confirmed → pharmacology → Type 2 drugs
    - Patient B: Clinical positive + NONDM DNA → genetic override → health trainer, avoid unnecessary drugs
+   - Patient C: Clinical positive + DMT2 DNA + NO pathway activation → false positive → health trainer (3-layer validation catches it)
 
-3. **(30s) The Drug Decision** — Patient A's DNA says DMT2. Show how Pharmacology agent recommends metformin/GLP-1, not insulin. One DNA result, one drug choice.
+3. **(30s) The Drug Decision** — Patient A's DNA says DMT2, transcriptomics confirms with beta cell stress pathway. Pharmacology agent recommends metformin/GLP-1, not insulin.
 
-4. **(15s) Architecture** — Two agents, one decision. Genomics + Doctor working together.
+4. **(15s) Architecture** — Three validation layers. Genomics + Doctor + Transcriptomics working together.
 
 ---
 
@@ -53,7 +54,14 @@ We show two patients with the same clinical reading — and completely different
 - DNA: NONDM (no genetic predisposition)
 - Decision: → **Health Trainer** (clinical positive, but not genetically predisposed — lifestyle first)
 
-### Case 4 — Type 1 vs Type 2 Drug Differentiation
+### Case 4 — Transcriptomics False Positive Filter
+- Clinical: glucose=155, BMI=30 (looks diabetic)
+- DNA: DMT2 (high confidence)
+- Genomics + Doctor → **Hospital** (confirmed)
+- Transcriptomics: Gene expression shows **no diabetes pathway activation** (all z-scores near 0)
+- Decision: → **Health Trainer** (false positive — molecular evidence doesn't support diabetes, avoid unnecessary drugs)
+
+### Case 5 — Type 1 vs Type 2 Drug Differentiation
 - Two patients, same clinical profile
 - Patient X: DMT1 DNA → **Insulin therapy**
 - Patient Y: DMT2 DNA → **Metformin + GLP-1**
@@ -77,7 +85,8 @@ We show two patients with the same clinical reading — and completely different
 - [ ] Case 3 (clinical override) fully demonstrated in dashboard
 
 ### P2 — Nice to Have
-- [ ] Remaining agents (Transcriptomics, Proteomics, Literature, Clinical Guidelines)
+- [x] Transcriptomics Agent — 3rd validation layer with false positive filter
+- [ ] Remaining agents (Proteomics, Literature, Clinical Guidelines)
 - [ ] Streamlit Ralph Loop tab
 - [x] All 4 demo cases pre-cached (mock outputs saved)
 

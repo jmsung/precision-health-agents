@@ -43,12 +43,13 @@ Patient
    |  |                  active)            activation)
    |  |                    |                    |
    |  +--- Subtype --> [Pharmacology Agent]   Health Trainer
-   |                        (TODO)            (false positive --
-   |                        |                  no drugs needed)
-   |                  ADA guideline-based medication selection
-   |                  -> Drug recommendation by subtype
-   |                  -> Drug interaction checks
-   |                  -> Treatment plan
+   |                        |                (false positive --
+   |                        |                 no drugs needed)
+   |                  recommend_medications (16-drug ADA guideline DB)
+   |                  -> Score by subtype match + complication benefit
+   |                  -> Contraindication filtering
+   |                  -> Personalized medication plan
+   |                  -> Monitoring schedule
    |
    +--- (HEALTH_TRAINER) --> [Health Trainer Agent]
    |                              |
@@ -86,7 +87,7 @@ Patient Case -> Orchestrator -> [Agents] -> Blackboard -> Synthesis -> Report
 | **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake -> hospital/health trainer routing |
 | **Health Trainer** | `classify_workout_type`, `recommend_exercises` | ADA 2023 clinical rules + 50-exercise DB | Exercise prescription for HEALTH_TRAINER referrals |
 | **Transcriptomics** | `analyze_gene_expression` | GSE26168 reference + z-score pathway scoring (110 genes, 5 pathways) | 3rd validation layer: confirms/rejects diabetes, subtype, complication risks |
-| **Pharmacology** | TBD | TBD | Subtype-informed medication selection (TODO) |
+| **Pharmacology** | `recommend_medications` | ADA guideline DB (16 drugs × 8 classes) + scoring engine | Subtype-informed medication selection with complication-aware ranking |
 | **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB | Biomarker inference (stub) |
 | **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base | Evidence-based guideline interpretation (stub) |
 | **Literature** | `search_pubmed`, `search_semantic_scholar` | Biopython Entrez, semanticscholar | Latest research on DNA-matched treatment (stub) |
@@ -163,6 +164,38 @@ Gene expression data (110-gene panel)
 - Cardiovascular (inflammation + oxidative stress)
 - Beta cell exhaustion (severe beta cell stress)
 - Neuropathy (oxidative + insulin resistance)
+
+### Pharmacology Agent: Medication Recommendation
+
+When transcriptomics confirms diabetes and identifies a molecular subtype, the Pharmacology Agent selects medications:
+
+```
+TranscriptomicsFindings (subtype + complication risks)
+        |
+  PharmacologyAgent.chat()
+        |
+  Claude (tool-use loop)
+        |  calls
+  recommend_medications(subtype, complications)
+        |
+  Score 16 ADA guideline drugs:
+    +3 subtype match, +2 ADA first-line, +2 complication benefit,
+    +1.5 severe complication boost, contraindication exclusion
+        |
+  Claude composes personalized medication plan
+        |
+  PharmacologyFindings (primary + supportive meds, monitoring plan)
+```
+
+**Drug classes**: Biguanide (Metformin), SGLT2 Inhibitors, GLP-1 RAs, Basal/Rapid Insulin, TZDs, DPP-4 Inhibitors, Statins, ACE Inhibitors, Neuropathic Pain Agents.
+
+| Subtype | Primary Drug Strategy |
+|---------|----------------------|
+| `inflammation_dominant` | GLP-1 RAs (anti-inflammatory + glucose) |
+| `beta_cell_failure` | Insulin therapy (basal ± rapid) |
+| `metabolic_insulin_resistant` | Metformin + SGLT2i |
+| `fibrotic_complication` | SGLT2i + ACEi (organ protection) |
+| `mixed` | DPP-4i bridge + combination approach |
 
 All tools: **on-device or free API calls** -- no GPU, no paid APIs beyond Claude.
 
@@ -316,7 +349,7 @@ Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 ```
 src/bioai/
 ├── config.py                  Pydantic settings (models, API keys, paths)
-├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, HealthTrainerFindings
+├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, PharmacologyFindings, HealthTrainerFindings
 ├── blackboard.py              Shared state for agent communication
 ├── orchestrator.py            2-phase: parallel agents → synthesis
 ├── agents/
@@ -326,7 +359,7 @@ src/bioai/
 │   ├── health_trainer.py      Exercise prescription with clinical context
 │   ├── transcriptomics.py     Gene expression pathway analysis + subtype + false positive filter
 │   ├── proteomics.py          UniProt REST API (stub)
-│   ├── pharmacology.py        DGIpy, OpenFDA (stub → TODO)
+│   ├── pharmacology.py        ADA guideline medication recommendation
 │   ├── clinical.py            Guidelines knowledge base (stub)
 │   └── literature.py          PubMed, Semantic Scholar (stub)
 ├── tools/
@@ -334,12 +367,14 @@ src/bioai/
 │   ├── diabetes_classifier.py         Pre-trained MLP (Pima, 75% accuracy)
 │   ├── workout_type_classifier.py     ADA 2023 clinical rules
 │   ├── exercise_recommender.py        50-exercise CSV lookup
-│   └── gene_expression_analyzer.py    GSE26168 z-score: gene profile → pathways/subtype/risks
+│   ├── gene_expression_analyzer.py    GSE26168 z-score: gene profile → pathways/subtype/risks
+│   └── drug_recommender.py            ADA guideline medication scoring + recommendation
 ├── prompts/                   System prompts as .txt (Ralph Loop edits these)
 │   ├── genomics.txt
 │   ├── doctor.txt
 │   ├── health_trainer.txt
-│   └── transcriptomics.txt
+│   ├── transcriptomics.txt
+│   └── pharmacology.txt
 └── eval/
     ├── cases.py               4 test cases with ground truth
     ├── metrics.py             Layer 1 (tool accuracy) + Layer 3 (decision correctness)

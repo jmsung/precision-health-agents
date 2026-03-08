@@ -69,6 +69,14 @@ class TranscriptomicsFindings(BaseModel):
     interpretation: str
 
 
+class PharmacologyFindings(BaseModel):
+    diabetes_subtype: str
+    primary_medications: list[dict[str, Any]]
+    supportive_medications: list[dict[str, Any]]
+    monitoring_plan: str
+    medication_summary: str
+
+
 class HealthTrainerFindings(BaseModel):
     fitness_level: Literal["beginner", "intermediate", "advanced"]
     goals: list[str]
@@ -79,7 +87,7 @@ class HealthTrainerFindings(BaseModel):
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | HealthTrainerFindings | None = None
+    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | PharmacologyFindings | HealthTrainerFindings | None = None
     summary: str
     error: str | None = None
 

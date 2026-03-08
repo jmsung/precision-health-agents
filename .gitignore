@@ -17,6 +17,10 @@ data/gym_members/*
 data/transcriptomics/*
 !data/transcriptomics/README.md
 !data/transcriptomics/raw/
+!data/medications/
+data/medications/*
+!data/medications/README.md
+!data/medications/raw/
 __pycache__/
 *.py[cod]
 *.egg-info/

@@ -149,7 +149,7 @@ The agent accepts `context: dict` with prior agent findings:
 These are injected into the system prompt so the LLM can contextualize the transcriptomic findings.
 
 **Output flows to**:
-- If `recommendation == "pharmacology"` → PharmacologyAgent (subtype + complication risks inform medication selection)
+- If `recommendation == "pharmacology"` → PharmacologyAgent (subtype + complication risks → personalized medication plan from 16-drug ADA guideline database)
 - If `recommendation == "health_trainer"` → Health Trainer (false positive — lifestyle intervention, no drugs)
 
 ## Tests

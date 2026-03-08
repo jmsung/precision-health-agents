@@ -2,14 +2,19 @@
 
 ## Active
 
+### Phase 4: Integration & Polish — Ralph Loop v2
+- [x] P0: Include failure examples + judge explanations in rewrite prompt
+- [x] P0: Add rollback on regression (save before, compare after, revert if worse)
+- [x] P1: Filter to prompt-improvable metrics only (skip tool_accuracy)
+- [x] P2: Iteration memory / history log (prevent oscillation)
+- [x] Tests for all new Ralph Loop behavior (8/8 pass)
+- [ ] Wire Ralph v2 into `scripts/evaluate.py` (failure context + rollback)
+
 ## Hold
 
-### Phase 4: Integration & Polish
-- [ ] End-to-end test: `scripts/run.py --case 1`
+- [ ] End-to-end: `scripts/run.py --case 1` (wire agents into orchestrator)
 - [ ] Wire all 6 agents into orchestrator
-- [ ] Bug fixes, error handling, polish
-
-## Todo
+- [ ] Dashboard polish for demo
 
 ## Completed
 

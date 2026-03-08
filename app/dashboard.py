@@ -137,13 +137,18 @@ with tab_overview:
         )
         fig = px.imshow(
             pivot,
-            color_continuous_scale=["#ff4444", "#44bb44"],
+            color_continuous_scale=[[0, "#ff4444"], [0.5, "#555555"], [1, "#00cc66"]],
             zmin=0,
             zmax=1,
             text_auto=".1f",
             aspect="auto",
         )
-        fig.update_layout(title="Tool Accuracy + Decision Correctness")
+        fig.update_layout(
+            title="Tool Accuracy + Decision Correctness",
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            font_color="#fafafa",
+        )
         st.plotly_chart(fig, width="stretch")
 
         # Detail table
@@ -151,8 +156,11 @@ with tab_overview:
         st.dataframe(
             df.style.apply(
                 lambda row: [
-                    "background-color: #d4edda" if row["passed"] else "background-color: #f8d7da"
-                ] * len(row),
+                    "background-color: #1a3a2a; color: #66ff99"
+                    if row["passed"]
+                    else "background-color: #3a1a1a; color: #ff6666"
+                ]
+                * len(row),
                 axis=1,
             ),
             width="stretch",
@@ -207,13 +215,18 @@ with tab_judge:
             pivot = agent_df.set_index("case")[dims]
             fig = px.imshow(
                 pivot,
-                color_continuous_scale="RdYlGn",
+                color_continuous_scale=[[0, "#ff4444"], [0.5, "#555555"], [1, "#00cc66"]],
                 zmin=1,
                 zmax=5,
                 text_auto=True,
                 aspect="auto",
             )
-            fig.update_layout(title=f"{agent.title()} Agent — Judge Scores")
+            fig.update_layout(
+                title=f"{agent.title()} Agent — Judge Scores",
+                paper_bgcolor="rgba(0,0,0,0)",
+                plot_bgcolor="rgba(0,0,0,0)",
+                font_color="#fafafa",
+            )
             st.plotly_chart(fig, width="stretch")
 
         # Explanations

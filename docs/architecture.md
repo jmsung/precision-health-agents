@@ -46,7 +46,7 @@ Genomics  Transcr  Proteo  Pharma  Clinical  Literature
 
 | Agent | Tools | Backend |
 |-------|-------|---------|
-| **Genomics** | `lookup_variant`, `search_clinvar`, `get_gene_summary` | myvariant.info, Biopython Entrez |
+| **Genomics** | `classify_dna`, `lookup_variant`, `search_clinvar`, `get_gene_summary` | Pre-trained CNN (diabetes), myvariant.info, Biopython Entrez |
 | **Transcriptomics** | `run_gsea`, `classify_subtype` | GSEApy, PAM50 rules |
 | **Proteomics** | `lookup_protein`, `get_protein_interactions` | UniProt REST, STRING DB |
 | **Pharmacology** | `search_drug_gene_interactions`, `search_adverse_effects` | DGIpy, OpenFDA |

@@ -2,12 +2,24 @@
 
 ## Datasets (all free, <1GB total)
 
-| Data Type | Dataset | Use |
-|-----------|---------|-----|
-| Genomics | ClinVar `variant_summary.txt` (~50MB) | Variant → disease lookup |
-| Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | Mutations + mRNA z-scores + clinical |
-| Pharmacology | PharmGKB clinical annotations | Drug-gene associations |
-| Drug Safety | Kaggle Drug Side Effects (<50MB) | Adverse reactions |
+| Data Type | Dataset | Location | Use |
+|-----------|---------|----------|-----|
+| Genomics | DNA Classification (Diabetes) | `data/dna_classification/` | CNN-based diabetes DNA classification |
+| Genomics | ClinVar `variant_summary.txt` (~50MB) | `data/clinvar/` | Variant → disease lookup |
+| Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | `data/metabric/` | Mutations + mRNA z-scores + clinical |
+| Pharmacology | PharmGKB clinical annotations | `data/pharmgkb/` | Drug-gene associations |
+| Drug Safety | Kaggle Drug Side Effects (<50MB) | `data/drug_side_effects/` | Adverse reactions |
+
+### DNA Classification Dataset (`data/dna_classification/`)
+
+Source: [DNA Classification Project](https://github.com/mobilttterbang/DNA_Classification_Project)
+
+| File | Description |
+|------|-------------|
+| `raw/Complete_DM_DNA_Sequence.csv` | Labeled DNA sequences (DMT1, DMT2, NONDM) |
+| `raw/DMT2_1296.fasta` | Type 2 Diabetes sequences in FASTA format |
+| `raw/NONDM.fasta` | Non-diabetic sequences in FASTA format |
+| `models/CNN_2Layers_3mers.h5` | Pre-trained 2-layer CNN weights |
 
 ## Patient Cases (from METABRIC)
 

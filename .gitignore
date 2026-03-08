@@ -13,6 +13,10 @@ data/exercises/*
 !data/gym_members/
 data/gym_members/*
 !data/gym_members/README.md
+!data/transcriptomics/
+data/transcriptomics/*
+!data/transcriptomics/README.md
+!data/transcriptomics/raw/
 __pycache__/
 *.py[cod]
 *.egg-info/

@@ -29,12 +29,17 @@ bioai/
 - [docs/data.md](docs/data.md) — Datasets, patient cases, data format
 - [docs/demo.md](docs/demo.md) — Demo plan, dashboard, priorities
 
+## Current Focus
+
+**Hackathon demo** — prioritize working end-to-end demo over polish. Ship fast, iterate.
+
 ## Rules
 
 - Python 3.12+, `uv` for deps
 - Reusable logic in `src/bioai/`, scripts only orchestrate
 - Claude API (`anthropic` SDK) for LLM calls; prompts in `src/bioai/prompts/*.txt`
 - Type hints on all signatures, docstrings on public APIs
+- TDD for new functions/classes: write test → implement → pass. Not required for scripts, config, or docs.
 - Conventional commits: `type(scope): description`
 - Branch naming: `type/description` (kebab-case)
 - Never force push to main

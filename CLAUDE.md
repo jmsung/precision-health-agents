@@ -11,8 +11,8 @@ bioai/
 ├── app/                 # Streamlit dashboard
 ├── tests/               # Tests (mirror src/ structure)
 ├── docs/                # Knowledge DB (architecture, vision, data, demo)
+├── data/                # Datasets (gitignored)
 ├── mb_<dev>/            # Per-developer memory banks (gitignored)
-└── data/                # Cached datasets (gitignored)
 ```
 
 ## Development Model

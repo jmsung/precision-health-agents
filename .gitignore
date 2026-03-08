@@ -1,5 +1,7 @@
 .mb
 mb_*/
+data/*
+!data/.gitkeep
 __pycache__/
 *.py[cod]
 *.egg-info/

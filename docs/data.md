@@ -18,4 +18,6 @@
 ## Format
 
 - All data as pandas DataFrames, cached as Parquet in `data/`
+- Files organized per data source (e.g., ClinVar, METABRIC, PharmGKB)
+- `data/` is gitignored — only `.gitkeep` is tracked
 - Each tool function: query in (gene, variant, drug) → dict out

@@ -50,6 +50,7 @@ bioai/
 │   ├── blackboard.py    # Shared state for agent communication
 │   ├── orchestrator.py  # 2-phase: parallel agents → synthesis
 │   └── config.py        # Settings
+├── data/                # Datasets (gitignored)
 ├── scripts/             # CLI entry points
 ├── app/                 # Streamlit dashboard
 ├── tests/               # Tests

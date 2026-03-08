@@ -1,5 +1,11 @@
 .mb
 __pycache__/
-*.pyc
-.env
+*.py[cod]
+*.egg-info/
+dist/
+build/
 .venv/
+.env
+*.lock
+.ruff_cache/
+.pytest_cache/

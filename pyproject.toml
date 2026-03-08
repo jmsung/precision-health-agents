@@ -1,0 +1,28 @@
+[project]
+name = "bioai"
+version = "0.1.0"
+description = "Multi-Agent Healthcare Intelligence System for Personalized and Preventive Medicine"
+requires-python = ">=3.12"
+dependencies = [
+    "anthropic",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "ruff",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/bioai"]
+
+[tool.ruff]
+line-length = 88
+src = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

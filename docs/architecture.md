@@ -114,10 +114,10 @@ Prompts are `.txt` files on disk — Ralph Loop reads, rewrites, saves. No code 
 
 | Component | Model | Why |
 |-----------|-------|-----|
-| Agent analysis | `claude-sonnet-4-6` | Fast + cheap for tool use |
-| Synthesis | `claude-opus-4-6` | Best quality for final report |
-| LLM-as-judge | `claude-sonnet-4-6` | Cost-efficient scoring |
-| Ralph Loop | `claude-opus-4-6` | Needs strong reasoning |
+| Agent analysis | `claude-sonnet-4-20250514` | Fast + cheap for tool use |
+| Synthesis | `claude-opus-4-20250514` | Best quality for final report |
+| LLM-as-judge | `claude-sonnet-4-20250514` | Cost-efficient scoring |
+| Ralph Loop | `claude-opus-4-20250514` | Needs strong reasoning |
 
 Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 
@@ -125,8 +125,8 @@ Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 
 ```
 src/bioai/
-├── config.py                  Settings (models, API keys, paths)
-├── models.py                  Patient, AgentResult, TestCase dataclasses
+├── config.py                  Pydantic settings (models, API keys, paths)
+├── models.py                  Patient, AgentResult, TestCase Pydantic models
 ├── blackboard.py              Shared state for agent communication
 ├── orchestrator.py            2-phase: parallel agents → synthesis
 ├── synthesis.py               Claude-powered final report generation

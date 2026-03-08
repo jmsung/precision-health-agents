@@ -1,7 +1,7 @@
 """Shared data models — the contract between agents and the orchestrator."""
 
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -50,10 +50,17 @@ class DoctorFindings(BaseModel):
 # Generic agent result — wraps any agent's findings
 # ---------------------------------------------------------------------------
 
+class HealthTrainerFindings(BaseModel):
+    fitness_level: Literal["beginner", "intermediate", "advanced"]
+    goals: list[str]
+    recommended_exercises: list[dict[str, Any]]
+    weekly_plan: str
+
+
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | DoctorFindings | None = None
+    findings: GenomicsFindings | DoctorFindings | HealthTrainerFindings | None = None
     summary: str
     error: str | None = None
 

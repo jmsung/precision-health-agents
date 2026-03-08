@@ -80,6 +80,7 @@
   - `test_agent_calls_dna_classifier_tool` — agent invokes tool, returns typed GenomicsFindings
   - `test_agent_returns_summary` — agent includes Claude narrative in result
   - `test_agent_returns_error_on_failure` — API failure returns error status gracefully
+- [x] `tests/test_integration_genomics_doctor.py` — 1 integration test: full pipeline (DNA → DMT2 high risk → routing → Doctor 5-turn conversation → Diabetic → hospital)
 - [x] `tests/test_doctor_agent.py` — 5 tests, all passing (mocked API)
   - `test_chat_returns_text_reply` — agent replies with string
   - `test_tool_called_and_findings_set` — tool invoked, findings populated

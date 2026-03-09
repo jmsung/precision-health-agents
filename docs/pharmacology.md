@@ -158,9 +158,9 @@ The PharmacologyAgent is designed to be:
 
 | File | Purpose |
 |------|---------|
-| `src/bioai/tools/drug_recommender.py` | Tool: ADA guideline medication scoring |
-| `src/bioai/agents/pharmacology.py` | Agent: Claude tool-use loop |
-| `src/bioai/prompts/pharmacology.txt` | System prompt (kind, supportive, informative) |
-| `src/bioai/models.py` | PharmacologyFindings data model |
+| `src/precision_health_agents/tools/drug_recommender.py` | Tool: ADA guideline medication scoring |
+| `src/precision_health_agents/agents/pharmacology.py` | Agent: Claude tool-use loop |
+| `src/precision_health_agents/prompts/pharmacology.txt` | System prompt (kind, supportive, informative) |
+| `src/precision_health_agents/models.py` | PharmacologyFindings data model |
 | `data/medications/raw/diabetes_medications.csv` | 16-drug ADA guideline database |
 | `data/medications/README.md` | Dataset documentation |

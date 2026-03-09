@@ -14,7 +14,7 @@ Both failures are costly. One wastes money. The other costs health.
 
 ## The Solution: Multi-Omics Precision Validation
 
-BioAI uses **multiple independent evidence sources across the biological spectrum** to confirm or reject a diabetes diagnosis, catching false positives before unnecessary medication:
+Precision Health Agents uses **multiple independent evidence sources across the biological spectrum** to confirm or reject a diabetes diagnosis, catching false positives before unnecessary medication:
 
 1. **Genomics** — Inherited risk, long-term predisposition (most stable layer)
 2. **Clinical (Doctor)** — Conversational intake → diabetes probability from clinical features
@@ -110,7 +110,7 @@ Giving a Type 2 drug to a Type 1 patient, or vice versa, is at best ineffective 
 | **Clinical Guidelines** | Evidence-based guideline interpretation |
 | **Literature Review** | Latest research on DNA-matched diabetes treatment |
 
-## What BioAI Is Not
+## What Precision Health Agents Is Not
 
 - Not a replacement for physicians — it is decision support
 - Not a general-purpose health chatbot — it is focused on DNA-precision diabetes care

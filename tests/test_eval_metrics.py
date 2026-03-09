@@ -1,8 +1,8 @@
 """Tests for deterministic evaluation metrics."""
 
-from bioai.eval.cases import EvalCase, ExpectedOutput
-from bioai.eval.metrics import MetricResult, score_decision, score_tool_accuracy
-from bioai.models import (
+from precision_health_agents.eval.cases import EvalCase, ExpectedOutput
+from precision_health_agents.eval.metrics import MetricResult, score_decision, score_tool_accuracy
+from precision_health_agents.models import (
     AgentResult,
     AgentStatus,
     DoctorFindings,

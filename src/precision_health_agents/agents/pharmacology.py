@@ -14,9 +14,9 @@ from typing import Any
 
 import anthropic
 
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, PharmacologyFindings
-from bioai.tools.drug_recommender import recommend_medications
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, PharmacologyFindings
+from precision_health_agents.tools.drug_recommender import recommend_medications
 
 _PROMPTS_DIR = Path(__file__).parents[1] / "prompts"
 

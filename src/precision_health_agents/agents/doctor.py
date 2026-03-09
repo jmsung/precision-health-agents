@@ -12,9 +12,9 @@ from pathlib import Path
 
 import anthropic
 
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, DoctorFindings, Recommendation, RiskLevel
-from bioai.tools.diabetes_classifier import classify_diabetes
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, DoctorFindings, Recommendation, RiskLevel
+from precision_health_agents.tools.diabetes_classifier import classify_diabetes
 
 _PROMPTS_DIR = Path(__file__).parents[1] / "prompts"
 

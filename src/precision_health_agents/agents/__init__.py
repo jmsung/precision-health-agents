@@ -1,5 +1,5 @@
 """Specialized biomedical agents."""
 
-from bioai.agents.base import BaseAgent
+from precision_health_agents.agents.base import BaseAgent
 
 __all__ = ["BaseAgent"]

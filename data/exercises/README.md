@@ -29,4 +29,4 @@ Source: [Best 50 Exercises for Your Body](https://www.kaggle.com/datasets/prajwa
 
 ## Used by
 
-`src/bioai/tools/exercise_recommender.py` — `recommend_exercises()` function
+`src/precision_health_agents/tools/exercise_recommender.py` — `recommend_exercises()` function

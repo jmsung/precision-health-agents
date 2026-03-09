@@ -13,7 +13,7 @@ Three-layer evaluation with 4 test cases covering all branches of the decision m
 | case-3 | NONDM (1500bp) | diabetic (same as case-1) | — | reconsider |
 | case-4 | NONDM (same) | non_diabetic (same as case-2) | age=21, Male, 170cm, 81.2kg, freq=0, dur=0 | health_trainer |
 
-DNA sequences are real from the DNA classification dataset. Clinical features are real Pima Indians Diabetes rows. All stored in `src/bioai/eval/data/case_inputs.json`.
+DNA sequences are real from the DNA classification dataset. Clinical features are real Pima Indians Diabetes rows. All stored in `src/precision_health_agents/eval/data/case_inputs.json`.
 
 ## Evaluation Layers
 
@@ -67,7 +67,7 @@ uv run python scripts/evaluate.py --ralph --iter 3  # Ralph Loop (3 prompt optim
 ```
 
 - **Real mode**: ~$0.15/run, ~30s. Runs agents + judge via Claude API.
-- **Mock mode**: Free, instant. Uses saved JSON from `src/bioai/eval/data/mock_outputs/`.
+- **Mock mode**: Free, instant. Uses saved JSON from `src/precision_health_agents/eval/data/mock_outputs/`.
 - **Workflow**: real `--save` → iterate on eval logic in mock → Ralph Loop → real again.
 
 ## Ralph Loop (Iterative Prompt Optimization)

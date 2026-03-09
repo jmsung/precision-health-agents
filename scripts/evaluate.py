@@ -12,14 +12,14 @@ import asyncio
 import json
 from pathlib import Path
 
-from bioai.config import Settings
-from bioai.eval.cases import EvalCase, load_cases
-from bioai.eval.judge import JudgeScore, judge_agent
-from bioai.eval.metrics import MetricResult, score_decision, score_tool_accuracy
-from bioai.eval.ralph import FailureExample, RalphResult, ralph_iterate
-from bioai.models import AgentResult
+from precision_health_agents.config import Settings
+from precision_health_agents.eval.cases import EvalCase, load_cases
+from precision_health_agents.eval.judge import JudgeScore, judge_agent
+from precision_health_agents.eval.metrics import MetricResult, score_decision, score_tool_accuracy
+from precision_health_agents.eval.ralph import FailureExample, RalphResult, ralph_iterate
+from precision_health_agents.models import AgentResult
 
-MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
+MOCK_DIR = Path("src/precision_health_agents/eval/data/mock_outputs")
 
 
 # -- Agent runners (real mode) ------------------------------------------------
@@ -27,7 +27,7 @@ MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
 
 async def run_genomics(case: EvalCase, settings: Settings) -> AgentResult:
     """Run Genomics agent on a test case."""
-    from bioai.agents.genomics import GenomicsAgent
+    from precision_health_agents.agents.genomics import GenomicsAgent
 
     agent = GenomicsAgent()
     return await agent.analyze(case.dna_sequence or "")
@@ -35,7 +35,7 @@ async def run_genomics(case: EvalCase, settings: Settings) -> AgentResult:
 
 async def run_doctor(case: EvalCase, settings: Settings) -> AgentResult:
     """Run Doctor agent on a test case."""
-    from bioai.agents.doctor import DoctorAgent
+    from precision_health_agents.agents.doctor import DoctorAgent
 
     agent = DoctorAgent()
     if case.clinical_features:
@@ -54,7 +54,7 @@ async def run_health_trainer(
     doctor_result: AgentResult | None,
 ) -> AgentResult:
     """Run Health Trainer agent on a test case (only for health_trainer decisions)."""
-    from bioai.agents.health_trainer import HealthTrainerAgent
+    from precision_health_agents.agents.health_trainer import HealthTrainerAgent
 
     # Build context from prior agent results
     context: dict = {}
@@ -85,7 +85,7 @@ async def run_transcriptomics(
     doctor_result: AgentResult | None,
 ) -> AgentResult:
     """Run Transcriptomics agent on a test case (only for hospital-path cases with gene data)."""
-    from bioai.agents.transcriptomics import TranscriptomicsAgent
+    from precision_health_agents.agents.transcriptomics import TranscriptomicsAgent
 
     # Build context from prior agent results
     context: dict = {}

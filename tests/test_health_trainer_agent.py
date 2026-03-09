@@ -4,8 +4,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.health_trainer import HealthTrainerAgent, _build_clinical_context
-from bioai.models import AgentStatus, HealthTrainerFindings
+from precision_health_agents.agents.health_trainer import HealthTrainerAgent, _build_clinical_context
+from precision_health_agents.models import AgentStatus, HealthTrainerFindings
 
 
 # ---------------------------------------------------------------------------
@@ -70,7 +70,7 @@ _DMT2_CONTEXT = {
 
 @pytest.fixture()
 def agent():
-    with patch("bioai.agents.health_trainer.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic"):
         a = HealthTrainerAgent()
         a._client = MagicMock()
         return a
@@ -78,7 +78,7 @@ def agent():
 
 @pytest.fixture()
 def agent_with_context():
-    with patch("bioai.agents.health_trainer.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic"):
         a = HealthTrainerAgent(context=_DMT2_CONTEXT)
         a._client = MagicMock()
         return a
@@ -89,14 +89,14 @@ def agent_with_context():
 # ---------------------------------------------------------------------------
 
 def test_clinical_context_injected_into_system_prompt():
-    with patch("bioai.agents.health_trainer.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic"):
         a = HealthTrainerAgent(context=_DMT2_CONTEXT)
     assert "DMT2" in a._system
     assert "0.71" in a._system or "71%" in a._system
 
 
 def test_no_context_uses_fallback_message():
-    with patch("bioai.agents.health_trainer.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic"):
         a = HealthTrainerAgent(context=None)
     assert "No prior clinical findings" in a._system
 
@@ -118,8 +118,8 @@ def test_build_clinical_context_with_no_context():
 
 def test_full_flow_calls_both_tools(agent):
     with (
-        patch("bioai.agents.health_trainer.classify_workout_type") as mock_classify,
-        patch("bioai.agents.health_trainer.recommend_exercises") as mock_recommend,
+        patch("precision_health_agents.agents.health_trainer.classify_workout_type") as mock_classify,
+        patch("precision_health_agents.agents.health_trainer.recommend_exercises") as mock_recommend,
     ):
         mock_classify.return_value = _FAKE_CLASSIFICATION
         mock_recommend.return_value = {
@@ -159,7 +159,7 @@ def test_findings_none_before_any_tool(agent):
 
 
 def test_findings_none_after_only_classify(agent):
-    with patch("bioai.agents.health_trainer.classify_workout_type") as mock_classify:
+    with patch("precision_health_agents.agents.health_trainer.classify_workout_type") as mock_classify:
         mock_classify.return_value = _FAKE_CLASSIFICATION
         agent._client.messages.create.side_effect = [
             _make_tool_use_response("c1", "classify_workout_type", {
@@ -175,8 +175,8 @@ def test_findings_none_after_only_classify(agent):
 
 def test_findings_populated_after_both_tools(agent):
     with (
-        patch("bioai.agents.health_trainer.classify_workout_type") as mock_classify,
-        patch("bioai.agents.health_trainer.recommend_exercises") as mock_recommend,
+        patch("precision_health_agents.agents.health_trainer.classify_workout_type") as mock_classify,
+        patch("precision_health_agents.agents.health_trainer.recommend_exercises") as mock_recommend,
     ):
         mock_classify.return_value = _FAKE_CLASSIFICATION
         mock_recommend.return_value = {

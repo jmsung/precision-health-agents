@@ -2,7 +2,7 @@
 
 import pytest
 
-from bioai.tools.metabolic_profile_analyzer import (
+from precision_health_agents.tools.metabolic_profile_analyzer import (
     PATHWAY_METABOLITES,
     PATHWAYS,
     _get_reference_stats,

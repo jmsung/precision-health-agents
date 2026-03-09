@@ -1,11 +1,11 @@
 """Smoke tests for project setup."""
 
-import bioai
-from bioai.agents.base import BaseAgent
+import precision_health_agents
+from precision_health_agents.agents.base import BaseAgent
 
 
 def test_version():
-    assert bioai.__version__ == "0.1.0"
+    assert precision_health_agents.__version__ == "0.1.0"
 
 
 def test_base_agent_is_abstract():

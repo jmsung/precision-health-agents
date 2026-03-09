@@ -2,8 +2,8 @@
 
 from unittest.mock import MagicMock, patch
 
-from bioai.agents.doctor import DoctorAgent
-from bioai.models import AgentStatus, Recommendation, RiskLevel
+from precision_health_agents.agents.doctor import DoctorAgent
+from precision_health_agents.models import AgentStatus, Recommendation, RiskLevel
 
 
 # ---------------------------------------------------------------------------
@@ -63,7 +63,7 @@ _SAMPLE_INPUT = {
 # Tests
 # ---------------------------------------------------------------------------
 
-@patch("bioai.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
 def test_chat_returns_text_reply(mock_anthropic):
     """Agent returns a string reply to a patient message."""
     print("\n[test_chat_returns_text_reply]")
@@ -82,8 +82,8 @@ def test_chat_returns_text_reply(mock_anthropic):
     assert len(reply) > 0
 
 
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
 def test_tool_called_and_findings_set(mock_classify, mock_anthropic):
     """Agent calls classify_diabetes and stores findings when tool_use is triggered."""
     print("\n[test_tool_called_and_findings_set]")
@@ -116,8 +116,8 @@ def test_tool_called_and_findings_set(mock_classify, mock_anthropic):
     assert agent.findings.recommendation == Recommendation.HOSPITAL
 
 
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
 def test_low_risk_recommends_health_trainer(mock_classify, mock_anthropic):
     """Low-risk result maps to health_trainer recommendation."""
     print("\n[test_low_risk_recommends_health_trainer]")
@@ -146,8 +146,8 @@ def test_low_risk_recommends_health_trainer(mock_classify, mock_anthropic):
     assert agent.findings.risk_level == RiskLevel.LOW
 
 
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
 def test_result_returns_agent_result(mock_classify, mock_anthropic):
     """result() returns a well-formed AgentResult after conversation."""
     print("\n[test_result_returns_agent_result]")
@@ -180,8 +180,8 @@ def test_result_returns_agent_result(mock_classify, mock_anthropic):
     assert ar.error is None
 
 
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
 def test_full_conversation_collects_all_8_features(mock_classify, mock_anthropic):
     """Simulate a realistic multi-turn conversation where the agent gathers all 8
     clinical features across several exchanges before calling the tool.

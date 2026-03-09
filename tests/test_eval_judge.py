@@ -4,9 +4,9 @@ import asyncio
 import json
 from unittest.mock import MagicMock, patch
 
-from bioai.eval.cases import EvalCase, ExpectedOutput
-from bioai.eval.judge import JudgeScore, judge_agent
-from bioai.models import (
+from precision_health_agents.eval.cases import EvalCase, ExpectedOutput
+from precision_health_agents.eval.judge import JudgeScore, judge_agent
+from precision_health_agents.models import (
     AgentResult,
     AgentStatus,
     GenomicsFindings,
@@ -52,7 +52,7 @@ def _mock_judge_response(scores: dict) -> MagicMock:
     return response
 
 
-@patch("bioai.eval.judge.anthropic.Anthropic")
+@patch("precision_health_agents.eval.judge.anthropic.Anthropic")
 def test_judge_returns_valid_scores(mock_anthropic_cls):
     mock_client = mock_anthropic_cls.return_value
     mock_client.messages.create.return_value = _mock_judge_response(
@@ -75,7 +75,7 @@ def test_judge_returns_valid_scores(mock_anthropic_cls):
     assert len(score.explanation) > 0
 
 
-@patch("bioai.eval.judge.anthropic.Anthropic")
+@patch("precision_health_agents.eval.judge.anthropic.Anthropic")
 def test_judge_sends_agent_output_in_prompt(mock_anthropic_cls):
     mock_client = mock_anthropic_cls.return_value
     mock_client.messages.create.return_value = _mock_judge_response(
@@ -97,7 +97,7 @@ def test_judge_sends_agent_output_in_prompt(mock_anthropic_cls):
     assert "case-1" in user_msg
 
 
-@patch("bioai.eval.judge.anthropic.Anthropic")
+@patch("precision_health_agents.eval.judge.anthropic.Anthropic")
 def test_judge_handles_api_error(mock_anthropic_cls):
     mock_client = mock_anthropic_cls.return_value
     mock_client.messages.create.side_effect = Exception("API error")

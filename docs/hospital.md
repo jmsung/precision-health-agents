@@ -130,6 +130,6 @@ class HospitalFindings(BaseModel):
 
 | File | Purpose |
 |------|---------|
-| `src/bioai/agents/hospital.py` | Agent + tool: conversational coordinator + `run_hospital_tests()` |
-| `src/bioai/prompts/hospital.txt` | System prompt (kind, reassuring, explains tests) |
-| `src/bioai/models.py` | HospitalFindings, HospitalRecommendation |
+| `src/precision_health_agents/agents/hospital.py` | Agent + tool: conversational coordinator + `run_hospital_tests()` |
+| `src/precision_health_agents/prompts/hospital.txt` | System prompt (kind, reassuring, explains tests) |
+| `src/precision_health_agents/models.py` | HospitalFindings, HospitalRecommendation |

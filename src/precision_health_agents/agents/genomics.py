@@ -4,10 +4,10 @@ from pathlib import Path
 
 import anthropic
 
-from bioai.agents.base import BaseAgent
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, GenomicsFindings, RiskLevel
-from bioai.tools.dna_classifier import classify_dna
+from precision_health_agents.agents.base import BaseAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, GenomicsFindings, RiskLevel
+from precision_health_agents.tools.dna_classifier import classify_dna
 
 _PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "genomics.txt"
 

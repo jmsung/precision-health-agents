@@ -19,9 +19,9 @@ from dotenv import load_dotenv
 
 load_dotenv()  # load .env (ANTHROPIC_API_KEY)
 
-from bioai.config import Settings
-from bioai.eval.cases import load_cases
-from bioai.models import (
+from precision_health_agents.config import Settings
+from precision_health_agents.eval.cases import load_cases
+from precision_health_agents.models import (
     AgentResult,
     DoctorFindings,
     GenomicsFindings,
@@ -29,7 +29,7 @@ from bioai.models import (
     TranscriptomicsFindings,
 )
 
-MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
+MOCK_DIR = Path("src/precision_health_agents/eval/data/mock_outputs")
 
 # -- Formatting helpers ------------------------------------------------------
 
@@ -112,7 +112,7 @@ async def demo(live: bool = False) -> None:
     system_says("Analyzing 1,000 bp DNA sequence with CNN classifier...")
 
     if live:
-        from bioai.agents.genomics import GenomicsAgent
+        from precision_health_agents.agents.genomics import GenomicsAgent
 
         genomics_result = await GenomicsAgent().analyze(case.dna_sequence or "")
     else:
@@ -143,7 +143,7 @@ async def demo(live: bool = False) -> None:
     patient_says(f"My clinical values: {feature_str}")
 
     if live:
-        from bioai.agents.doctor import DoctorAgent
+        from precision_health_agents.agents.doctor import DoctorAgent
 
         doc = DoctorAgent(settings=settings)
         reply = doc.chat(f"My clinical values: {feature_str}")
@@ -187,7 +187,7 @@ async def demo(live: bool = False) -> None:
     )
 
     if live:
-        from bioai.agents.transcriptomics import TranscriptomicsAgent
+        from precision_health_agents.agents.transcriptomics import TranscriptomicsAgent
 
         context = {
             "genomics": genomics_result.model_dump(),
@@ -248,7 +248,7 @@ async def demo(live: bool = False) -> None:
     )
 
     if live:
-        from bioai.agents.pharmacology import PharmacologyAgent
+        from precision_health_agents.agents.pharmacology import PharmacologyAgent
 
         context["transcriptomics"] = tx_result.model_dump()
         pharma = PharmacologyAgent(settings=settings, context=context)

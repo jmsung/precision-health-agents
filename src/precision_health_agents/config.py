@@ -20,7 +20,7 @@ class Settings(BaseModel):
     max_tokens: int = 4096
 
     # Paths
-    prompts_dir: Path = Path("src/bioai/prompts")
+    prompts_dir: Path = Path("src/precision_health_agents/prompts")
     data_dir: Path = Path("data")
 
     @classmethod

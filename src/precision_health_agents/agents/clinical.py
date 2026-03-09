@@ -1,6 +1,6 @@
 """Clinical guidelines agent for guideline interpretation."""
 
-from bioai.agents.base import BaseAgent
+from precision_health_agents.agents.base import BaseAgent
 
 
 class ClinicalAgent(BaseAgent):

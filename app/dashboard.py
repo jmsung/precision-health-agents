@@ -9,12 +9,12 @@ import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
 
-from bioai.eval.cases import EvalCase, load_cases
-from bioai.eval.judge import JudgeScore, judge_agent
-from bioai.eval.metrics import score_decision, score_tool_accuracy
-from bioai.models import AgentResult
+from precision_health_agents.eval.cases import EvalCase, load_cases
+from precision_health_agents.eval.judge import JudgeScore, judge_agent
+from precision_health_agents.eval.metrics import score_decision, score_tool_accuracy
+from precision_health_agents.models import AgentResult
 
-MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
+MOCK_DIR = Path("src/precision_health_agents/eval/data/mock_outputs")
 
 
 # -- Data loading -------------------------------------------------------------

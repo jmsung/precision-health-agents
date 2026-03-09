@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.metabolomics import MetabolomicsAgent
-from bioai.config import Settings
-from bioai.models import AgentStatus, RiskLevel
+from precision_health_agents.agents.metabolomics import MetabolomicsAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentStatus, RiskLevel
 
 
 def _make_settings() -> Settings:
@@ -50,7 +50,7 @@ _MOCK_TOOL_RESULT = {
 
 class TestMetabolomicsAgent:
 
-    @patch("bioai.agents.metabolomics.analyze_metabolic_profile")
+    @patch("precision_health_agents.agents.metabolomics.analyze_metabolic_profile")
     def test_analyze_with_tool_call(self, mock_tool):
         mock_tool.return_value = _MOCK_TOOL_RESULT
         settings = _make_settings()
@@ -127,7 +127,7 @@ class TestMetabolomicsAgent:
         assert result.status == AgentStatus.ERROR
         assert result.error == "API error"
 
-    @patch("bioai.agents.metabolomics.analyze_metabolic_profile")
+    @patch("precision_health_agents.agents.metabolomics.analyze_metabolic_profile")
     def test_findings_have_correct_types(self, mock_tool):
         mock_tool.return_value = _MOCK_TOOL_RESULT
         settings = _make_settings()

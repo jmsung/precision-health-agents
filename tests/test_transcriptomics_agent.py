@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.transcriptomics import TranscriptomicsAgent
-from bioai.config import Settings
-from bioai.models import AgentStatus, RiskLevel
+from precision_health_agents.agents.transcriptomics import TranscriptomicsAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentStatus, RiskLevel
 
 
 def _make_settings() -> Settings:

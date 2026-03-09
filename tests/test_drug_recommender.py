@@ -2,7 +2,7 @@
 
 import pytest
 
-from bioai.tools.drug_recommender import recommend_medications, _load_medications
+from precision_health_agents.tools.drug_recommender import recommend_medications, _load_medications
 
 
 class TestLoadMedications:

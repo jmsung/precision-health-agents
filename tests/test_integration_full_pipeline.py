@@ -21,10 +21,10 @@ Patient profile
 import asyncio
 from unittest.mock import MagicMock, patch
 
-from bioai.agents.doctor import DoctorAgent
-from bioai.agents.genomics import GenomicsAgent
-from bioai.agents.health_trainer import HealthTrainerAgent
-from bioai.models import AgentStatus, Recommendation, RiskLevel
+from precision_health_agents.agents.doctor import DoctorAgent
+from precision_health_agents.agents.genomics import GenomicsAgent
+from precision_health_agents.agents.health_trainer import HealthTrainerAgent
+from precision_health_agents.models import AgentStatus, Recommendation, RiskLevel
 
 
 # ---------------------------------------------------------------------------
@@ -124,13 +124,13 @@ _WORKOUT_CLASSIFICATION = {
 # Full pipeline integration test
 # ---------------------------------------------------------------------------
 
-@patch("bioai.agents.genomics.anthropic.Anthropic")
-@patch("bioai.agents.genomics.classify_dna")
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
-@patch("bioai.agents.health_trainer.anthropic.Anthropic")
-@patch("bioai.agents.health_trainer.classify_workout_type")
-@patch("bioai.agents.health_trainer.recommend_exercises")
+@patch("precision_health_agents.agents.genomics.anthropic.Anthropic")
+@patch("precision_health_agents.agents.genomics.classify_dna")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic")
+@patch("precision_health_agents.agents.health_trainer.classify_workout_type")
+@patch("precision_health_agents.agents.health_trainer.recommend_exercises")
 def test_full_pipeline_dna_doctor_health_trainer(
     mock_recommend,
     mock_classify_workout,

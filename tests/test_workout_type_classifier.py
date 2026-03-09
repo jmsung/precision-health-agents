@@ -2,7 +2,7 @@
 
 import pytest
 
-from bioai.tools.workout_type_classifier import classify_workout_type
+from precision_health_agents.tools.workout_type_classifier import classify_workout_type
 
 
 def _classify(**kwargs) -> dict:

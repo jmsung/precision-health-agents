@@ -23,15 +23,15 @@ Scenarios (based on whether diabetes is confirmed or not):
 import asyncio
 from unittest.mock import MagicMock, patch
 
-from bioai.agents.doctor import DoctorAgent
-from bioai.agents.genomics import GenomicsAgent
-from bioai.agents.health_trainer import HealthTrainerAgent
-from bioai.agents.hospital import HospitalAgent
-from bioai.agents.pharmacology import PharmacologyAgent
-from bioai.agents.transcriptomics import TranscriptomicsAgent
-from bioai.models import AgentStatus, HospitalRecommendation, PharmacologyFindings, Recommendation, RiskLevel
-from bioai.tools.gene_expression_analyzer import PATHWAY_GENES, _get_reference_stats
-from bioai.tools.metabolic_profile_analyzer import _get_reference_stats as _get_metab_ref
+from precision_health_agents.agents.doctor import DoctorAgent
+from precision_health_agents.agents.genomics import GenomicsAgent
+from precision_health_agents.agents.health_trainer import HealthTrainerAgent
+from precision_health_agents.agents.hospital import HospitalAgent
+from precision_health_agents.agents.pharmacology import PharmacologyAgent
+from precision_health_agents.agents.transcriptomics import TranscriptomicsAgent
+from precision_health_agents.models import AgentStatus, HospitalRecommendation, PharmacologyFindings, Recommendation, RiskLevel
+from precision_health_agents.tools.gene_expression_analyzer import PATHWAY_GENES, _get_reference_stats
+from precision_health_agents.tools.metabolic_profile_analyzer import _get_reference_stats as _get_metab_ref
 
 
 # ---------------------------------------------------------------------------
@@ -131,8 +131,8 @@ def _run_genomics(predicted_class: str, confidence: float) -> MagicMock:
     probs[predicted_class] = confidence
 
     with (
-        patch("bioai.agents.genomics.anthropic.Anthropic"),
-        patch("bioai.agents.genomics.classify_dna") as mock_classify,
+        patch("precision_health_agents.agents.genomics.anthropic.Anthropic"),
+        patch("precision_health_agents.agents.genomics.classify_dna") as mock_classify,
     ):
         mock_classify.return_value = {
             "predicted_class": predicted_class,
@@ -170,8 +170,8 @@ def _run_doctor(clinical_values: dict, prediction: str, probability: float):
     risk = "high" if probability > 0.5 else "low"
 
     with (
-        patch("bioai.agents.doctor.anthropic.Anthropic"),
-        patch("bioai.agents.doctor.classify_diabetes") as mock_classify,
+        patch("precision_health_agents.agents.doctor.anthropic.Anthropic"),
+        patch("precision_health_agents.agents.doctor.classify_diabetes") as mock_classify,
     ):
         mock_classify.return_value = {
             "prediction": prediction,
@@ -248,9 +248,9 @@ def _run_transcriptomics(gene_expression: dict, context: dict):
 def _run_health_trainer(context: dict):
     """Run mocked HealthTrainerAgent, return result."""
     with (
-        patch("bioai.agents.health_trainer.anthropic.Anthropic"),
-        patch("bioai.agents.health_trainer.classify_workout_type") as mock_classify,
-        patch("bioai.agents.health_trainer.recommend_exercises") as mock_recommend,
+        patch("precision_health_agents.agents.health_trainer.anthropic.Anthropic"),
+        patch("precision_health_agents.agents.health_trainer.classify_workout_type") as mock_classify,
+        patch("precision_health_agents.agents.health_trainer.recommend_exercises") as mock_recommend,
     ):
         mock_classify.return_value = _HT_CLASSIFY_RESULT
         mock_recommend.return_value = {
@@ -282,7 +282,7 @@ def _run_pharmacology(context: dict):
     subtype = trans_findings.get("diabetes_subtype", {}).get("subtype", "mixed")
     complications = trans_findings.get("complication_risks", [])
 
-    with patch("bioai.agents.pharmacology.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.pharmacology.anthropic.Anthropic"):
         agent = PharmacologyAgent(context=context)
         agent._client = MagicMock()
 
@@ -599,7 +599,7 @@ def _build_normal_metabolites() -> dict[str, float]:
 
 def _run_hospital(gene_expression: dict, metabolite_levels: dict, context: dict, consent: bool = True):
     """Run mocked HospitalAgent through consent + tests flow."""
-    with patch("bioai.agents.hospital.anthropic.Anthropic"):
+    with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
         agent = HospitalAgent(context=context)
         agent._client = MagicMock()
 

@@ -1,6 +1,6 @@
 """Literature review agent for medical publications."""
 
-from bioai.agents.base import BaseAgent
+from precision_health_agents.agents.base import BaseAgent
 
 
 class LiteratureAgent(BaseAgent):

@@ -1,37 +1,36 @@
-"""Proteomics agent for protein biomarker analysis."""
+"""Transcriptomics agent for gene expression pathway analysis."""
 
 from pathlib import Path
 
 import anthropic
 
-from bioai.agents.base import BaseAgent
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, ProteomicsFindings, RiskLevel
-from bioai.tools.protein_biomarker_analyzer import analyze_protein_biomarkers
+from precision_health_agents.agents.base import BaseAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, RiskLevel, TranscriptomicsFindings
+from precision_health_agents.tools.gene_expression_analyzer import analyze_gene_expression
 
-_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "proteomics.txt"
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "transcriptomics.txt"
 
 _TOOL_DEF = {
-    "name": "analyze_protein_biomarkers",
+    "name": "analyze_gene_expression",
     "description": (
-        "Analyze protein biomarker levels for diabetes-related functional markers. "
-        "Takes a dictionary of protein names to abundance/concentration values and returns "
-        "biomarker scores, elevated biomarkers, panel classification, risk level, "
-        "complication evidence, and diabetes confirmation."
+        "Analyze a patient's gene expression profile for diabetes-related pathway activity. "
+        "Takes a dictionary of gene symbols to expression values and returns pathway scores, "
+        "dominant pathway, active pathways, risk level, and dysregulated genes."
     ),
     "input_schema": {
         "type": "object",
         "properties": {
-            "protein_levels": {
+            "gene_expression": {
                 "type": "object",
                 "description": (
-                    "Dictionary mapping protein names to abundance/concentration values. "
-                    'Example: {"CRP": 8.5, "TNF_alpha": 45.2, "IL6": 12.1}'
+                    "Dictionary mapping gene symbols to expression values. "
+                    "Example: {\"TNF\": 1250.5, \"IL6\": 890.2, \"INS\": 45.0}"
                 ),
                 "additionalProperties": {"type": "number"},
             }
         },
-        "required": ["protein_levels"],
+        "required": ["gene_expression"],
     },
 }
 
@@ -59,12 +58,6 @@ def _load_prompt(context: dict | None = None) -> str:
                 f"Doctor: {d.get('prediction', 'unknown')} "
                 f"(probability: {d.get('probability', 'N/A')})"
             )
-        if "transcriptomics" in context:
-            t = context["transcriptomics"]
-            parts.append(
-                f"Transcriptomics: {t.get('dominant_pathway', 'unknown')} "
-                f"(risk: {t.get('risk_level', 'N/A')})"
-            )
         if parts:
             clinical_context = (
                 "\n## Prior agent findings\n" + "\n".join(f"- {p}" for p in parts)
@@ -72,16 +65,16 @@ def _load_prompt(context: dict | None = None) -> str:
     return template.replace("{clinical_context}", clinical_context)
 
 
-class ProteomicsAgent(BaseAgent):
-    name = "proteomics"
-    role = "Protein biomarker analysis for diabetes functional confirmation"
+class TranscriptomicsAgent(BaseAgent):
+    name = "transcriptomics"
+    role = "Gene expression signal analysis"
 
     def __init__(self, settings: Settings | None = None):
         self._settings = settings or Settings.from_env()
         self._client = anthropic.Anthropic(api_key=self._settings.api_key)
 
     async def analyze(self, query: str, context: dict | None = None) -> AgentResult:
-        """Analyze protein biomarker data for diabetes-related functional markers."""
+        """Analyze gene expression data for diabetes pathway activity."""
         messages = [{"role": "user", "content": query}]
 
         try:
@@ -93,7 +86,7 @@ class ProteomicsAgent(BaseAgent):
                 messages=messages,
             )
 
-            findings: ProteomicsFindings | None = None
+            findings: TranscriptomicsFindings | None = None
 
             while response.stop_reason == "tool_use":
                 tool_calls = [b for b in response.content if b.type == "tool_use"]
@@ -101,15 +94,19 @@ class ProteomicsAgent(BaseAgent):
 
                 tool_result_content = []
                 for call in tool_calls:
-                    if call.name == "analyze_protein_biomarkers":
-                        raw = analyze_protein_biomarkers(call.input["protein_levels"])
-                        findings = ProteomicsFindings(
-                            biomarker_scores=raw["biomarker_scores"],
-                            elevated_biomarkers=raw["elevated_biomarkers"],
-                            biomarker_panel=raw["biomarker_panel"],
+                    if call.name == "analyze_gene_expression":
+                        raw = analyze_gene_expression(call.input["gene_expression"])
+                        findings = TranscriptomicsFindings(
+                            pathway_scores=raw["pathway_scores"],
+                            dominant_pathway=raw["dominant_pathway"],
+                            active_pathways=raw["active_pathways"],
                             risk_level=_RISK_MAP[raw["risk_level"]],
-                            complication_evidence=raw["complication_evidence"],
+                            dysregulated_genes=raw["dysregulated_genes"],
                             diabetes_confirmed=raw["diabetes_confirmed"],
+                            diabetes_subtype=raw["diabetes_subtype"],
+                            complication_risks=raw["complication_risks"],
+                            monitoring=raw["monitoring"],
+                            recommendation=raw["recommendation"],
                             interpretation=raw["interpretation"],
                         )
                         tool_result_content.append({

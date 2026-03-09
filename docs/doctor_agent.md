@@ -10,9 +10,9 @@ When combined with the Genomics Agent's DNA classification, the recommendation b
 
 | File | Description |
 |------|-------------|
-| `src/bioai/agents/doctor.py` | Agent implementation |
-| `src/bioai/tools/diabetes_classifier.py` | `classify_diabetes()` tool |
-| `src/bioai/prompts/doctor.txt` | System prompt |
+| `src/precision_health_agents/agents/doctor.py` | Agent implementation |
+| `src/precision_health_agents/tools/diabetes_classifier.py` | `classify_diabetes()` tool |
+| `src/precision_health_agents/prompts/doctor.txt` | System prompt |
 | `data/diabetes/models/mlp_diabetes.keras` | Pre-trained MLP |
 | `data/diabetes/models/scaler.npy` | StandardScaler params |
 | `tests/test_doctor_agent.py` | 5 tests |
@@ -60,7 +60,7 @@ Once Claude has collected all 8 values, it calls `classify_diabetes` internally.
 ## API
 
 ```python
-from bioai.agents.doctor import DoctorAgent
+from precision_health_agents.agents.doctor import DoctorAgent
 
 agent = DoctorAgent()
 

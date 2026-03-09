@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from bioai.eval.ralph import FailureExample, RalphResult, ralph_iterate, _find_weakest
+from precision_health_agents.eval.ralph import FailureExample, RalphResult, ralph_iterate, _find_weakest
 
 
 def _mock_rewrite_response(new_prompt: str) -> MagicMock:
@@ -31,7 +31,7 @@ def _mock_judge_response(scores: dict) -> MagicMock:
 # -- Existing tests -----------------------------------------------------------
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_iterate_rewrites_prompt(mock_anthropic_cls, tmp_path):
     """Ralph should rewrite the weakest agent's prompt file."""
     prompt_file = tmp_path / "doctor.txt"
@@ -58,7 +58,7 @@ def test_ralph_iterate_rewrites_prompt(mock_anthropic_cls, tmp_path):
     assert "expert clinical doctor" in prompt_file.read_text()
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_iterate_skips_missing_prompt(mock_anthropic_cls, tmp_path):
     """If the worst agent has no prompt file, ralph should report no change."""
     eval_scores = {
@@ -107,7 +107,7 @@ def test_find_weakest_skips_decision():
 # -- P0: Failure context in rewrite prompt ------------------------------------
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_includes_failure_context(mock_anthropic_cls, tmp_path):
     """Rewrite prompt should include failure examples when provided."""
     prompt_file = tmp_path / "doctor.txt"
@@ -148,7 +148,7 @@ def test_ralph_includes_failure_context(mock_anthropic_cls, tmp_path):
 # -- P0: Backup prompt for rollback ------------------------------------------
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_saves_backup(mock_anthropic_cls, tmp_path):
     """Ralph should save backup of original prompt before rewriting."""
     prompt_file = tmp_path / "doctor.txt"
@@ -174,7 +174,7 @@ def test_ralph_saves_backup(mock_anthropic_cls, tmp_path):
     assert backup.read_text() == original
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_rollback_restores_prompt(mock_anthropic_cls, tmp_path):
     """Caller can restore prompt from backup_path on regression."""
     prompt_file = tmp_path / "doctor.txt"
@@ -204,7 +204,7 @@ def test_ralph_rollback_restores_prompt(mock_anthropic_cls, tmp_path):
 # -- P2: History prevents oscillation -----------------------------------------
 
 
-@patch("bioai.eval.ralph.anthropic.Anthropic")
+@patch("precision_health_agents.eval.ralph.anthropic.Anthropic")
 def test_ralph_includes_history(mock_anthropic_cls, tmp_path):
     """Rewrite prompt should include past iteration history when provided."""
     prompt_file = tmp_path / "doctor.txt"

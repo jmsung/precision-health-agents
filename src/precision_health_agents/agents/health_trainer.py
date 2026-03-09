@@ -18,10 +18,10 @@ from typing import Literal
 
 import anthropic
 
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, HealthTrainerFindings
-from bioai.tools.exercise_recommender import recommend_exercises
-from bioai.tools.workout_type_classifier import classify_workout_type
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, HealthTrainerFindings
+from precision_health_agents.tools.exercise_recommender import recommend_exercises
+from precision_health_agents.tools.workout_type_classifier import classify_workout_type
 
 _PROMPTS_DIR = Path(__file__).parents[1] / "prompts"
 

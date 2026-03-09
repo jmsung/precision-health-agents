@@ -1,8 +1,8 @@
-"""Tests for bioai.config — Settings model."""
+"""Tests for precision_health_agents.config — Settings model."""
 
 from pathlib import Path
 
-from bioai.config import Settings
+from precision_health_agents.config import Settings
 
 
 class TestSettings:
@@ -13,7 +13,7 @@ class TestSettings:
         assert s.judge_model == "claude-sonnet-4-20250514"
         assert s.ralph_model == "claude-opus-4-20250514"
         assert s.max_tokens == 4096
-        assert s.prompts_dir == Path("src/bioai/prompts")
+        assert s.prompts_dir == Path("src/precision_health_agents/prompts")
         assert s.data_dir == Path("data")
 
     def test_custom_values(self):

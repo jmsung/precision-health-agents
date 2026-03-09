@@ -36,11 +36,11 @@ Patient
 
 | File | Purpose |
 |---|---|
-| `src/bioai/agents/health_trainer.py` | Agent class (two-tool conversational flow) |
-| `src/bioai/tools/workout_type_classifier.py` | Clinical rule-based workout type + experience level classifier |
-| `src/bioai/tools/exercise_recommender.py` | Exercise database lookup/filter tool |
-| `src/bioai/prompts/health_trainer.txt` | System prompt with 7-step conversation flow |
-| `src/bioai/models.py` | `HealthTrainerFindings` model |
+| `src/precision_health_agents/agents/health_trainer.py` | Agent class (two-tool conversational flow) |
+| `src/precision_health_agents/tools/workout_type_classifier.py` | Clinical rule-based workout type + experience level classifier |
+| `src/precision_health_agents/tools/exercise_recommender.py` | Exercise database lookup/filter tool |
+| `src/precision_health_agents/prompts/health_trainer.txt` | System prompt with 7-step conversation flow |
+| `src/precision_health_agents/models.py` | `HealthTrainerFindings` model |
 | `scripts/evaluate_health_trainer.py` | 3-layer evaluation against gym members dataset |
 | `data/exercises/raw/exercises.csv` | 50-exercise dataset |
 | `data/gym_members/raw/gym_members.csv` | 973-row gym members dataset (evaluation + future ML) |
@@ -239,14 +239,14 @@ Health trainer evaluation details (3-layer against gym members dataset) are in *
 
 ## Extension Points
 
-Four extension points for contributors (A–D) covering demographic ML, experience level ML, exercise database expansion, and additional clinical context. See `src/bioai/tools/workout_type_classifier.py` for inline documentation on each.
+Four extension points for contributors (A–D) covering demographic ML, experience level ML, exercise database expansion, and additional clinical context. See `src/precision_health_agents/tools/workout_type_classifier.py` for inline documentation on each.
 
 ---
 
 ## Usage
 
 ```python
-from bioai.agents.health_trainer import HealthTrainerAgent
+from precision_health_agents.agents.health_trainer import HealthTrainerAgent
 
 # Standalone (no prior agents)
 trainer = HealthTrainerAgent()
@@ -274,9 +274,9 @@ print(result.findings.recommended_exercises)  # list of exercise dicts
 
 ```python
 import asyncio
-from bioai.agents.genomics import GenomicsAgent
-from bioai.agents.doctor import DoctorAgent
-from bioai.agents.health_trainer import HealthTrainerAgent
+from precision_health_agents.agents.genomics import GenomicsAgent
+from precision_health_agents.agents.doctor import DoctorAgent
+from precision_health_agents.agents.health_trainer import HealthTrainerAgent
 
 # Step 1: Genomics
 genomics = GenomicsAgent()

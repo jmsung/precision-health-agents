@@ -10,9 +10,9 @@ Simulates a patient who:
 import asyncio
 from unittest.mock import MagicMock, patch
 
-from bioai.agents.doctor import DoctorAgent
-from bioai.agents.genomics import GenomicsAgent
-from bioai.models import AgentStatus, Recommendation, RiskLevel
+from precision_health_agents.agents.doctor import DoctorAgent
+from precision_health_agents.agents.genomics import GenomicsAgent
+from precision_health_agents.models import AgentStatus, Recommendation, RiskLevel
 
 
 # ---------------------------------------------------------------------------
@@ -89,10 +89,10 @@ _CLINICAL_VALUES = {
 # Integration test
 # ---------------------------------------------------------------------------
 
-@patch("bioai.agents.genomics.anthropic.Anthropic")
-@patch("bioai.agents.genomics.classify_dna")
-@patch("bioai.agents.doctor.anthropic.Anthropic")
-@patch("bioai.agents.doctor.classify_diabetes")
+@patch("precision_health_agents.agents.genomics.anthropic.Anthropic")
+@patch("precision_health_agents.agents.genomics.classify_dna")
+@patch("precision_health_agents.agents.doctor.anthropic.Anthropic")
+@patch("precision_health_agents.agents.doctor.classify_diabetes")
 def test_dna_positive_then_doctor_confirms(
     mock_clinical_classify,
     mock_doctor_anthropic,

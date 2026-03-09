@@ -2,7 +2,7 @@
 
 import pytest
 
-from bioai.tools.exercise_recommender import recommend_exercises
+from precision_health_agents.tools.exercise_recommender import recommend_exercises
 
 
 def test_returns_all_exercises_with_no_filters():

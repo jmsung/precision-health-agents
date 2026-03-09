@@ -1,36 +1,37 @@
-"""Transcriptomics agent for gene expression pathway analysis."""
+"""Metabolomics agent for metabolic profile analysis."""
 
 from pathlib import Path
 
 import anthropic
 
-from bioai.agents.base import BaseAgent
-from bioai.config import Settings
-from bioai.models import AgentResult, AgentStatus, RiskLevel, TranscriptomicsFindings
-from bioai.tools.gene_expression_analyzer import analyze_gene_expression
+from precision_health_agents.agents.base import BaseAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentResult, AgentStatus, MetabolomicsFindings, RiskLevel
+from precision_health_agents.tools.metabolic_profile_analyzer import analyze_metabolic_profile
 
-_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "transcriptomics.txt"
+_PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "metabolomics.txt"
 
 _TOOL_DEF = {
-    "name": "analyze_gene_expression",
+    "name": "analyze_metabolic_profile",
     "description": (
-        "Analyze a patient's gene expression profile for diabetes-related pathway activity. "
-        "Takes a dictionary of gene symbols to expression values and returns pathway scores, "
-        "dominant pathway, active pathways, risk level, and dysregulated genes."
+        "Analyze metabolic profile for diabetes-related metabolic state. "
+        "Takes a dictionary of metabolite names to concentration values and returns "
+        "metabolite scores, insulin resistance score, metabolic pattern, risk level, "
+        "subtype refinement, and diabetes confirmation."
     ),
     "input_schema": {
         "type": "object",
         "properties": {
-            "gene_expression": {
+            "metabolite_levels": {
                 "type": "object",
                 "description": (
-                    "Dictionary mapping gene symbols to expression values. "
-                    "Example: {\"TNF\": 1250.5, \"IL6\": 890.2, \"INS\": 45.0}"
+                    "Dictionary mapping metabolite names to concentration values. "
+                    'Example: {"triglycerides": 250.0, "leucine": 180.5, "HDL": 35.0}'
                 ),
                 "additionalProperties": {"type": "number"},
             }
         },
-        "required": ["gene_expression"],
+        "required": ["metabolite_levels"],
     },
 }
 
@@ -58,6 +59,12 @@ def _load_prompt(context: dict | None = None) -> str:
                 f"Doctor: {d.get('prediction', 'unknown')} "
                 f"(probability: {d.get('probability', 'N/A')})"
             )
+        if "transcriptomics" in context:
+            t = context["transcriptomics"]
+            parts.append(
+                f"Transcriptomics: {t.get('dominant_pathway', 'unknown')} "
+                f"(risk: {t.get('risk_level', 'N/A')})"
+            )
         if parts:
             clinical_context = (
                 "\n## Prior agent findings\n" + "\n".join(f"- {p}" for p in parts)
@@ -65,16 +72,16 @@ def _load_prompt(context: dict | None = None) -> str:
     return template.replace("{clinical_context}", clinical_context)
 
 
-class TranscriptomicsAgent(BaseAgent):
-    name = "transcriptomics"
-    role = "Gene expression signal analysis"
+class MetabolomicsAgent(BaseAgent):
+    name = "metabolomics"
+    role = "Metabolic profile analysis for diabetes metabolic state assessment"
 
     def __init__(self, settings: Settings | None = None):
         self._settings = settings or Settings.from_env()
         self._client = anthropic.Anthropic(api_key=self._settings.api_key)
 
     async def analyze(self, query: str, context: dict | None = None) -> AgentResult:
-        """Analyze gene expression data for diabetes pathway activity."""
+        """Analyze metabolic profile for diabetes-related metabolic state."""
         messages = [{"role": "user", "content": query}]
 
         try:
@@ -86,7 +93,7 @@ class TranscriptomicsAgent(BaseAgent):
                 messages=messages,
             )
 
-            findings: TranscriptomicsFindings | None = None
+            findings: MetabolomicsFindings | None = None
 
             while response.stop_reason == "tool_use":
                 tool_calls = [b for b in response.content if b.type == "tool_use"]
@@ -94,19 +101,16 @@ class TranscriptomicsAgent(BaseAgent):
 
                 tool_result_content = []
                 for call in tool_calls:
-                    if call.name == "analyze_gene_expression":
-                        raw = analyze_gene_expression(call.input["gene_expression"])
-                        findings = TranscriptomicsFindings(
-                            pathway_scores=raw["pathway_scores"],
-                            dominant_pathway=raw["dominant_pathway"],
-                            active_pathways=raw["active_pathways"],
+                    if call.name == "analyze_metabolic_profile":
+                        raw = analyze_metabolic_profile(call.input["metabolite_levels"])
+                        findings = MetabolomicsFindings(
+                            metabolite_scores=raw["metabolite_scores"],
+                            elevated_metabolites=raw["elevated_metabolites"],
+                            insulin_resistance_score=raw["insulin_resistance_score"],
+                            metabolic_pattern=raw["metabolic_pattern"],
                             risk_level=_RISK_MAP[raw["risk_level"]],
-                            dysregulated_genes=raw["dysregulated_genes"],
+                            subtype_refinement=raw["subtype_refinement"],
                             diabetes_confirmed=raw["diabetes_confirmed"],
-                            diabetes_subtype=raw["diabetes_subtype"],
-                            complication_risks=raw["complication_risks"],
-                            monitoring=raw["monitoring"],
-                            recommendation=raw["recommendation"],
                             interpretation=raw["interpretation"],
                         )
                         tool_result_content.append({

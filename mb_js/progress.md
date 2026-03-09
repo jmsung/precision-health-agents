@@ -2,71 +2,48 @@
 
 ## Active
 
-### Phase 4: Integration & Polish — Eval Pipeline Improvements
+### Phase 5: Publication Quality
 
-#### Ralph v2 → evaluate.py wiring (P0)
-- [x] `eval/ralph.py` — failure context, rollback/backup, metric filtering, history (8/8 tests)
-- [ ] Wire into `scripts/evaluate.py`: collect failure examples from judge, pass history, rollback on regression
+**Focus**: Clean architecture, comprehensive tests, reproducible results for journal article.
 
-#### Transcriptomics in eval pipeline (P0)
-- [ ] `eval/cases.py` — add `gene_expression` input field to EvalCase
-- [ ] `eval/metrics.py` — add TranscriptomicsFindings to `score_tool_accuracy`
-- [ ] `scripts/evaluate.py` — add `run_transcriptomics()` runner
-- [ ] Update decision matrix for 3-layer validation (hospital → transcriptomics confirms/rejects)
-- [ ] Add test case for false positive filter (hospital decision overridden by transcriptomics)
-- [ ] Mock outputs for transcriptomics
+#### Rename: bioai → precision-health-agents
+- [x] `src/bioai/` → `src/precision_health_agents/` (git mv)
+- [x] 202 import/patch replacements across 45 .py files
+- [x] pyproject.toml: name → `precision-health-agents`, packages path updated
+- [x] All docs updated (CLAUDE.md, README.md, 10+ doc files)
+- [x] 200/200 tests pass
 
-#### Latency & cost tracking (P1)
-- [ ] Track wall-clock time per agent in `evaluate_case()`
-- [ ] Track API token usage (from Claude response metadata)
-- [ ] Include in eval report + dashboard
-
-#### Agent-aware judge context (P2)
-- [ ] Tell judge what each agent can/can't see (doctor doesn't see DNA results)
-- [ ] Fixes misleading low scores on doctor case-2/3
+#### E2E pipeline & eval (in progress)
+- [ ] Run E2E test across all cases
+- [ ] Run Ralph Loop for prompt quality
+- [ ] Publication-ready eval results
 
 ## Hold
 
-- [ ] End-to-end: `scripts/run.py --case 1` (wire agents into orchestrator)
-- [ ] Wire all agents into orchestrator
-- [ ] Dashboard polish for demo
+#### Latency & cost tracking (deferred)
+- [ ] Track wall-clock time per agent, API token usage, report + dashboard
+
+#### Agent-aware judge context
+- [ ] Tell judge what each agent can/can't see (doctor doesn't see DNA results)
 
 ## Completed
 
-### Phase 4: Ralph Loop v2
-- [x] P0: Include failure examples + judge explanations in rewrite prompt
-- [x] P0: Add rollback on regression (save before, compare after, revert if worse)
-- [x] P1: Filter to prompt-improvable metrics only (skip tool_accuracy)
-- [x] P2: Iteration memory / history log (prevent oscillation)
-- [x] Tests for all new Ralph Loop behavior (8/8 pass)
+### Phase 4: Demo (Hackathon — completed 2025-03-08)
+- [x] `scripts/demo_conversation.py` — step-by-step case 1 walkthrough
+- [x] `scripts/run.py --case N` — E2E CLI pipeline (4 cases, mock + live)
+- [x] Transcriptomics as 3rd validation layer in eval
+- [x] Ralph Loop v2 (failure examples, rollback, prompt-improvable filter, history)
+- [x] Streamlit eval dashboard
 
 ### Phase 3: Evaluation Framework
-- [x] `eval/cases.py` — 4 test cases with ground truth (EvalCase, ExpectedOutput)
-- [x] `eval/metrics.py` — Layer 1 tool accuracy + Layer 3 decision correctness
-- [x] `eval/judge.py` — Layer 2 LLM-as-judge (relevance, completeness, accuracy, safety, 1-5)
-- [x] `eval/ralph.py` — Ralph Loop v1 (find weakest agent/metric → Claude Opus rewrites prompt)
-- [x] `scripts/evaluate.py` — CLI runner (--mock, --save, --ralph --iter N)
-- [x] `data/eval/case_inputs.json` — real DNA sequences + Pima clinical features + HT vitals
-- [x] `app/dashboard.py` — Streamlit eval dashboard (Overview, Case Details, LLM-as-Judge tabs)
-- [x] Health trainer integrated into eval (cases, metrics, evaluate.py, mock I/O)
-- [x] Full eval: 13/13 deterministic pass (genomics, doctor, health_trainer, decision)
+- [x] eval/cases.py, metrics.py, judge.py, ralph.py
+- [x] scripts/evaluate.py CLI (--mock, --save, --ralph --iter N)
+- [x] app/dashboard.py — Streamlit eval dashboard
+- [x] Health trainer in eval, 13/13 deterministic pass
 - [x] Ralph Loop 3 iterations — rewrote health_trainer.txt and doctor.txt
-  - health_trainer: rel 2→5, comp 1→4, acc 3→5, safe 4→5
-  - doctor: added verification step, systematic collection, comprehensive response
-  - Note: doctor case-2/3 low judge scores expected (by design — no DNA context)
-- [x] Docs updated: architecture.md, demo.md, README.md
-- [x] 23/23 tests pass (metrics, cases, judge, ralph)
 
-### Phase 2: Core Framework — **Reassigned to YH**
-- YH owns: BaseAgent rewrite, orchestrator, synthesis, models, blackboard
-- YH landed: genomics agent+tool, doctor agent+tool, diabetes classifier, health trainer agent+tools
+### Phase 2: Core Framework (YH)
+- [x] BaseAgent, orchestrator, models, genomics/doctor/health_trainer agents+tools
 
-### phase1-setup-models — Config rewrite
-- [x] `config.py` → Pydantic BaseModel with multi-model fields, `from_env()`, paths
-- [x] Test coverage for config (`tests/test_config.py`)
-
-### main — Project scaffolding
-- [x] Initialize repo with uv + Python 3.12
-- [x] BaseAgent ABC and six agent stubs
-- [x] Orchestrator skeleton
-- [x] Config, tests, entry point
+### Phase 1: Setup
+- [x] Config, scaffolding, uv + Python 3.12

@@ -56,7 +56,7 @@ A simple 2-layer MLP trained with TensorFlow/Keras.
 ## Usage
 
 ```python
-from bioai.tools.diabetes_classifier import classify_diabetes
+from precision_health_agents.tools.diabetes_classifier import classify_diabetes
 
 result = classify_diabetes(
     pregnancies=1,

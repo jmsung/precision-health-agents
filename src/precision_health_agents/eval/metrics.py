@@ -2,8 +2,8 @@
 
 from pydantic import BaseModel
 
-from bioai.eval.cases import EvalCase
-from bioai.models import (
+from precision_health_agents.eval.cases import EvalCase
+from precision_health_agents.models import (
     AgentResult,
     AgentStatus,
     DoctorFindings,

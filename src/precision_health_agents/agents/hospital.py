@@ -13,15 +13,15 @@ from pathlib import Path
 
 import anthropic
 
-from bioai.config import Settings
-from bioai.models import (
+from precision_health_agents.config import Settings
+from precision_health_agents.models import (
     AgentResult,
     AgentStatus,
     HospitalFindings,
     HospitalRecommendation,
 )
-from bioai.tools.gene_expression_analyzer import analyze_gene_expression
-from bioai.tools.metabolic_profile_analyzer import analyze_metabolic_profile
+from precision_health_agents.tools.gene_expression_analyzer import analyze_gene_expression
+from precision_health_agents.tools.metabolic_profile_analyzer import analyze_metabolic_profile
 
 _PROMPTS_DIR = Path(__file__).parents[1] / "prompts"
 

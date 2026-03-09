@@ -12,7 +12,7 @@ from pathlib import Path
 import anthropic
 from pydantic import BaseModel
 
-from bioai.config import Settings
+from precision_health_agents.config import Settings
 
 _REWRITE_SYSTEM = """\
 You are an expert prompt engineer for biomedical AI agents.

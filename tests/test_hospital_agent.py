@@ -5,10 +5,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.hospital import HospitalAgent, run_hospital_tests
-from bioai.models import AgentStatus, HospitalRecommendation
-from bioai.tools.gene_expression_analyzer import PATHWAY_GENES, _get_reference_stats as _get_gene_ref
-from bioai.tools.metabolic_profile_analyzer import _get_reference_stats as _get_metab_ref
+from precision_health_agents.agents.hospital import HospitalAgent, run_hospital_tests
+from precision_health_agents.models import AgentStatus, HospitalRecommendation
+from precision_health_agents.tools.gene_expression_analyzer import PATHWAY_GENES, _get_reference_stats as _get_gene_ref
+from precision_health_agents.tools.metabolic_profile_analyzer import _get_reference_stats as _get_metab_ref
 
 
 # ---------------------------------------------------------------------------
@@ -147,7 +147,7 @@ class TestHospitalAgent:
 
     def test_agent_explains_tests_to_patient(self):
         """First turn: agent explains blood tests are needed."""
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent(context={
                 "genomics": {"predicted_class": "DMT2", "confidence": 0.88},
                 "doctor": {"prediction": "Diabetic", "probability": 0.76},
@@ -167,7 +167,7 @@ class TestHospitalAgent:
         gene_expr = _build_activated_gene_expression(["inflammation_immune", "beta_cell_stress"])
         metab = _build_elevated_metabolites()
 
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent(context={
                 "genomics": {"predicted_class": "DMT2", "confidence": 0.88},
                 "doctor": {"prediction": "Diabetic", "probability": 0.76},
@@ -201,7 +201,7 @@ class TestHospitalAgent:
 
     def test_agent_handles_declined_consent(self):
         """Patient declines tests."""
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent()
             agent._client = MagicMock()
 
@@ -225,7 +225,7 @@ class TestHospitalAgent:
         gene_expr = _build_normal_gene_expression()
         metab = _build_normal_metabolites()
 
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent()
             agent._client = MagicMock()
 
@@ -247,7 +247,7 @@ class TestHospitalAgent:
         gene_expr = _build_activated_gene_expression(["inflammation_immune"])
         metab = _build_elevated_metabolites()
 
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent()
             agent._client = MagicMock()
 
@@ -268,7 +268,7 @@ class TestHospitalAgent:
 
     def test_result_error_before_tests(self):
         """result() returns ERROR if tests haven't been run."""
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent()
             result = agent.result()
             assert result.status == AgentStatus.ERROR
@@ -276,7 +276,7 @@ class TestHospitalAgent:
 
     def test_context_injected_into_prompt(self):
         """Prior genomics/doctor findings appear in system prompt."""
-        with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        with patch("precision_health_agents.agents.hospital.anthropic.Anthropic"):
             agent = HospitalAgent(context={
                 "genomics": {"predicted_class": "DMT2", "confidence": 0.92},
                 "doctor": {"prediction": "Diabetic", "probability": 0.80},

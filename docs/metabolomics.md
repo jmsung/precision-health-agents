@@ -144,10 +144,10 @@ class MetabolomicsFindings(BaseModel):
 
 | File | Purpose |
 |------|---------|
-| `src/bioai/tools/metabolic_profile_analyzer.py` | Tool: z-score pathway scoring + IR score + pattern classification |
-| `src/bioai/agents/metabolomics.py` | Agent: Claude tool-use loop |
-| `src/bioai/prompts/metabolomics.txt` | System prompt |
-| `src/bioai/models.py` | MetabolomicsFindings data model |
+| `src/precision_health_agents/tools/metabolic_profile_analyzer.py` | Tool: z-score pathway scoring + IR score + pattern classification |
+| `src/precision_health_agents/agents/metabolomics.py` | Agent: Claude tool-use loop |
+| `src/precision_health_agents/prompts/metabolomics.txt` | System prompt |
+| `src/precision_health_agents/models.py` | MetabolomicsFindings data model |
 | `data/metabolomics/raw/diabetes_metabolomics.csv` | Processed reference dataset (61 × 86) |
 | `data/metabolomics/raw/ST001906_raw.txt` | Raw data from Metabolomics Workbench |
 | `scripts/process_metabolomics.py` | Data processing pipeline |

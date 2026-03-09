@@ -1,6 +1,6 @@
 """Tests for evaluation test cases."""
 
-from bioai.eval.cases import ExpectedOutput, EvalCase, load_cases
+from precision_health_agents.eval.cases import ExpectedOutput, EvalCase, load_cases
 
 
 def test_expected_output_validates():

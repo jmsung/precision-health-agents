@@ -5,8 +5,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.genomics import GenomicsAgent
-from bioai.models import AgentStatus, RiskLevel
+from precision_health_agents.agents.genomics import GenomicsAgent
+from precision_health_agents.models import AgentStatus, RiskLevel
 
 _SAMPLE_SEQ = "ATGCGTACGATCGATCGATCGATCGATCGATCGATCGATCGATCG"
 _QUERY = f"Analyze this DNA sequence for diabetes risk: {_SAMPLE_SEQ}"
@@ -41,7 +41,7 @@ def agent():
     return GenomicsAgent()
 
 
-@patch("bioai.agents.genomics.anthropic.Anthropic")
+@patch("precision_health_agents.agents.genomics.anthropic.Anthropic")
 def test_agent_calls_dna_classifier_tool(mock_anthropic_cls, agent):
     """Agent should invoke classify_dna and return structured GenomicsFindings."""
     mock_client = mock_anthropic_cls.return_value
@@ -62,7 +62,7 @@ def test_agent_calls_dna_classifier_tool(mock_anthropic_cls, agent):
     assert result.findings.interpretation != ""
 
 
-@patch("bioai.agents.genomics.anthropic.Anthropic")
+@patch("precision_health_agents.agents.genomics.anthropic.Anthropic")
 def test_agent_returns_summary(mock_anthropic_cls, agent):
     """Agent should include a text summary in the result."""
     mock_client = mock_anthropic_cls.return_value
@@ -77,7 +77,7 @@ def test_agent_returns_summary(mock_anthropic_cls, agent):
     assert "High risk" in result.summary
 
 
-@patch("bioai.agents.genomics.anthropic.Anthropic")
+@patch("precision_health_agents.agents.genomics.anthropic.Anthropic")
 def test_agent_returns_error_on_failure(mock_anthropic_cls, agent):
     """Agent should return error status if the API call fails."""
     mock_client = mock_anthropic_cls.return_value

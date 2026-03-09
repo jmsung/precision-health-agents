@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from bioai.tools.workout_type_classifier import classify_workout_type, _experience_level
+from precision_health_agents.tools.workout_type_classifier import classify_workout_type, _experience_level
 
 _PROJECT_ROOT = Path(__file__).parents[1]
 _GYM_DATA = _PROJECT_ROOT / "data" / "gym_members" / "raw" / "gym_members.csv"

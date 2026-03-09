@@ -6,9 +6,9 @@ import re
 import anthropic
 from pydantic import BaseModel
 
-from bioai.config import Settings
-from bioai.eval.cases import EvalCase
-from bioai.models import AgentResult
+from precision_health_agents.config import Settings
+from precision_health_agents.eval.cases import EvalCase
+from precision_health_agents.models import AgentResult
 
 _JUDGE_SYSTEM = """\
 You are an expert clinical evaluator. Score the following agent output on four dimensions.

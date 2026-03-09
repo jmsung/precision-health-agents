@@ -5,9 +5,9 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.proteomics import ProteomicsAgent
-from bioai.config import Settings
-from bioai.models import AgentStatus, RiskLevel
+from precision_health_agents.agents.proteomics import ProteomicsAgent
+from precision_health_agents.config import Settings
+from precision_health_agents.models import AgentStatus, RiskLevel
 
 
 def _make_settings() -> Settings:
@@ -51,7 +51,7 @@ _MOCK_TOOL_RESULT = {
 
 class TestProteomicsAgent:
 
-    @patch("bioai.agents.proteomics.analyze_protein_biomarkers")
+    @patch("precision_health_agents.agents.proteomics.analyze_protein_biomarkers")
     def test_analyze_with_tool_call(self, mock_tool):
         mock_tool.return_value = _MOCK_TOOL_RESULT
         settings = _make_settings()
@@ -127,7 +127,7 @@ class TestProteomicsAgent:
         assert result.status == AgentStatus.ERROR
         assert result.error == "API error"
 
-    @patch("bioai.agents.proteomics.analyze_protein_biomarkers")
+    @patch("precision_health_agents.agents.proteomics.analyze_protein_biomarkers")
     def test_findings_have_correct_types(self, mock_tool):
         mock_tool.return_value = _MOCK_TOOL_RESULT
         settings = _make_settings()

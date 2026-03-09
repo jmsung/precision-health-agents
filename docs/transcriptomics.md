@@ -165,9 +165,9 @@ These are injected into the system prompt so the LLM can contextualize the trans
 
 | File | Purpose |
 |------|---------|
-| `src/bioai/tools/gene_expression_analyzer.py` | Tool: z-score pathway scoring + subtype/complications |
-| `src/bioai/agents/transcriptomics.py` | Agent: Claude tool-use loop |
-| `src/bioai/prompts/transcriptomics.txt` | System prompt |
-| `src/bioai/models.py` | TranscriptomicsFindings data model |
+| `src/precision_health_agents/tools/gene_expression_analyzer.py` | Tool: z-score pathway scoring + subtype/complications |
+| `src/precision_health_agents/agents/transcriptomics.py` | Agent: Claude tool-use loop |
+| `src/precision_health_agents/prompts/transcriptomics.txt` | System prompt |
+| `src/precision_health_agents/models.py` | TranscriptomicsFindings data model |
 | `data/transcriptomics/raw/diabetes_transcriptomics.csv` | Processed reference dataset |
 | `scripts/process_transcriptomics.py` | Data processing pipeline |

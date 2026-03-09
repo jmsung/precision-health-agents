@@ -6,8 +6,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from bioai.agents.pharmacology import PharmacologyAgent, _build_clinical_context
-from bioai.models import AgentStatus, PharmacologyFindings
+from precision_health_agents.agents.pharmacology import PharmacologyAgent, _build_clinical_context
+from precision_health_agents.models import AgentStatus, PharmacologyFindings
 
 
 # ---------------------------------------------------------------------------
@@ -123,7 +123,7 @@ class TestBuildClinicalContext:
 # ---------------------------------------------------------------------------
 
 class TestPharmacologyAgent:
-    @patch("bioai.agents.pharmacology.anthropic.Anthropic")
+    @patch("precision_health_agents.agents.pharmacology.anthropic.Anthropic")
     def test_chat_calls_tool_and_returns_plan(self, mock_anthropic_cls):
         mock_client = MagicMock()
         mock_anthropic_cls.return_value = mock_client
@@ -147,7 +147,7 @@ class TestPharmacologyAgent:
         assert "Liraglutide" in reply
         assert mock_client.messages.create.call_count == 2
 
-    @patch("bioai.agents.pharmacology.anthropic.Anthropic")
+    @patch("precision_health_agents.agents.pharmacology.anthropic.Anthropic")
     def test_findings_populated_after_tool_call(self, mock_anthropic_cls):
         mock_client = MagicMock()
         mock_anthropic_cls.return_value = mock_client
@@ -169,7 +169,7 @@ class TestPharmacologyAgent:
         assert findings.diabetes_subtype == "inflammation_dominant"
         assert len(findings.primary_medications) + len(findings.supportive_medications) > 0
 
-    @patch("bioai.agents.pharmacology.anthropic.Anthropic")
+    @patch("precision_health_agents.agents.pharmacology.anthropic.Anthropic")
     def test_result_success_after_tool_call(self, mock_anthropic_cls):
         mock_client = MagicMock()
         mock_anthropic_cls.return_value = mock_client
@@ -190,7 +190,7 @@ class TestPharmacologyAgent:
         assert result.findings is not None
         assert result.error is None
 
-    @patch("bioai.agents.pharmacology.anthropic.Anthropic")
+    @patch("precision_health_agents.agents.pharmacology.anthropic.Anthropic")
     def test_result_error_without_tool_call(self, mock_anthropic_cls):
         mock_client = MagicMock()
         mock_anthropic_cls.return_value = mock_client

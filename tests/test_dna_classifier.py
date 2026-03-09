@@ -1,6 +1,6 @@
 """Tests for the DNA classifier tool."""
 
-from bioai.tools.dna_classifier import CLASSES, _load_model, _load_tokenizer, classify_dna
+from precision_health_agents.tools.dna_classifier import CLASSES, _load_model, _load_tokenizer, classify_dna
 
 # A short but valid DNA sequence for testing
 _SAMPLE_SEQ = "ATGCGTACGATCGATCGATCGATCGATCGATCGATCGATCGATCG"

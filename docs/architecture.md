@@ -307,7 +307,7 @@ Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 ## Project Structure
 
 ```
-src/bioai/
+src/precision_health_agents/
 ├── config.py                  Pydantic settings (models, API keys, paths)
 ├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, ProteomicsFindings, MetabolomicsFindings, HospitalFindings, PharmacologyFindings, HealthTrainerFindings
 ├── blackboard.py              Shared state for agent communication

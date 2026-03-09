@@ -1,12 +1,12 @@
-# BioAI
+# Precision Health Agents
 
 Multi-agent healthcare intelligence system — 9 specialized agents analyze patient data and synthesize personalized health assessments with 4-layer validation (DNA + clinical + transcriptomics + metabolomics).
 
 ## Project Structure
 
 ```
-bioai/
-├── src/bioai/           # Shared package (agents, tools, eval, orchestrator)
+precision-health-agents/
+├── src/precision_health_agents/           # Shared package (agents, tools, eval, orchestrator)
 ├── scripts/             # Entry points (run.py, evaluate.py, process_transcriptomics.py, process_metabolomics.py)
 ├── app/                 # Streamlit eval dashboard
 ├── tests/               # Tests (mirror src/ structure, 196 tests)
@@ -36,13 +36,13 @@ bioai/
 
 ## Current Focus
 
-**Hackathon demo** — prioritize working end-to-end demo over polish. Ship fast, iterate.
+**Publication quality** — clean architecture, comprehensive tests, reproducible results for journal article.
 
 ## Rules
 
 - Python 3.12+, `uv` for deps
-- Reusable logic in `src/bioai/`, scripts only orchestrate
-- Claude API (`anthropic` SDK) for LLM calls; prompts in `src/bioai/prompts/*.txt`
+- Reusable logic in `src/precision_health_agents/`, scripts only orchestrate
+- Claude API (`anthropic` SDK) for LLM calls; prompts in `src/precision_health_agents/prompts/*.txt`
 - Type hints on all signatures, docstrings on public APIs
 - TDD for new functions/classes: write test → implement → pass. Not required for scripts, config, or docs.
 - Conventional commits: `type(scope): description`

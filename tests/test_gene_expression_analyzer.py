@@ -2,7 +2,7 @@
 
 import pytest
 
-from bioai.tools.gene_expression_analyzer import (
+from precision_health_agents.tools.gene_expression_analyzer import (
     PATHWAY_GENES,
     PATHWAYS,
     _get_reference_stats,

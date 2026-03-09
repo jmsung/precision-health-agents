@@ -31,7 +31,7 @@ DNA sequence (query)
   AgentResult (typed, passed to orchestrator)
 ```
 
-## DNA Classifier Tool (`src/bioai/tools/dna_classifier.py`)
+## DNA Classifier Tool (`src/precision_health_agents/tools/dna_classifier.py`)
 
 ### Model
 
@@ -58,7 +58,7 @@ DNA sequence (query)
 ### Interface
 
 ```python
-from bioai.tools.dna_classifier import classify_dna
+from precision_health_agents.tools.dna_classifier import classify_dna
 
 result = classify_dna("ATGCGT...")
 # {
@@ -68,7 +68,7 @@ result = classify_dna("ATGCGT...")
 # }
 ```
 
-## Genomics Agent (`src/bioai/agents/genomics.py`)
+## Genomics Agent (`src/precision_health_agents/agents/genomics.py`)
 
 Claude drives the tool-use loop. When a DNA sequence is present in the query, Claude calls `classify_dna`, receives the result, and generates a clinical interpretation.
 
@@ -89,7 +89,7 @@ AgentResult(
 )
 ```
 
-### Shared Models (`src/bioai/models.py`)
+### Shared Models (`src/precision_health_agents/models.py`)
 
 | Model | Purpose |
 |-------|---------|

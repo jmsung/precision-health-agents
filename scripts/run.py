@@ -12,9 +12,9 @@ import asyncio
 import json
 from pathlib import Path
 
-from bioai.config import Settings
-from bioai.eval.cases import EvalCase, load_cases
-from bioai.models import (
+from precision_health_agents.config import Settings
+from precision_health_agents.eval.cases import EvalCase, load_cases
+from precision_health_agents.models import (
     AgentResult,
     DoctorFindings,
     GenomicsFindings,
@@ -22,21 +22,21 @@ from bioai.models import (
     TranscriptomicsFindings,
 )
 
-MOCK_DIR = Path("src/bioai/eval/data/mock_outputs")
+MOCK_DIR = Path("src/precision_health_agents/eval/data/mock_outputs")
 
 
 # -- Agent runners -----------------------------------------------------------
 
 
 async def run_genomics(case: EvalCase, settings: Settings) -> AgentResult:
-    from bioai.agents.genomics import GenomicsAgent
+    from precision_health_agents.agents.genomics import GenomicsAgent
 
     agent = GenomicsAgent()
     return await agent.analyze(case.dna_sequence or "")
 
 
 def run_doctor(case: EvalCase, settings: Settings) -> AgentResult:
-    from bioai.agents.doctor import DoctorAgent
+    from precision_health_agents.agents.doctor import DoctorAgent
 
     agent = DoctorAgent()
     if case.clinical_features:
@@ -52,7 +52,7 @@ async def run_transcriptomics(
     settings: Settings,
     context: dict,
 ) -> AgentResult:
-    from bioai.agents.transcriptomics import TranscriptomicsAgent
+    from precision_health_agents.agents.transcriptomics import TranscriptomicsAgent
 
     agent = TranscriptomicsAgent(settings=settings)
     gene_data = case.gene_expression or {}
@@ -67,7 +67,7 @@ def run_pharmacology(
     context: dict,
     tx_findings: TranscriptomicsFindings,
 ) -> AgentResult:
-    from bioai.agents.pharmacology import PharmacologyAgent
+    from precision_health_agents.agents.pharmacology import PharmacologyAgent
 
     agent = PharmacologyAgent(settings=settings, context=context)
     subtype = tx_findings.diabetes_subtype.get("primary", "Type 2")
@@ -89,7 +89,7 @@ def run_health_trainer(
     settings: Settings,
     context: dict,
 ) -> AgentResult:
-    from bioai.agents.health_trainer import HealthTrainerAgent
+    from precision_health_agents.agents.health_trainer import HealthTrainerAgent
 
     agent = HealthTrainerAgent(settings=settings, context=context or None)
     vitals = case.health_trainer_vitals or {}

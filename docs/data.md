@@ -10,7 +10,7 @@
 | Fitness | Gym Members Exercise Dataset (Kaggle) | `data/gym_members/` | Health trainer evaluation + future ML |
 | Transcriptomics | GSE26168 Blood Transcriptome (GEO) | `data/transcriptomics/` | Gene expression pathway analysis (110 genes, 24 samples) |
 | Proteomics | TBD (YH in progress) | `data/proteomics/` | Inflammatory/signaling protein biomarkers, kidney/CV injury markers |
-| Metabolomics | TBD (YH in progress) | `data/metabolomics/` | Insulin resistance signals, lipid/BCAA/acylcarnitine patterns |
+| Metabolomics | ST001906 Plasma Metabolomics (Metabolomics Workbench) | `data/metabolomics/` | Metabolic profile analysis (78 metabolites, 5 pathway scores) |
 | Genomics | ClinVar `variant_summary.txt` (~50MB) | `data/clinvar/` | Variant → disease lookup |
 | Genomics + Transcriptomics | METABRIC from Kaggle (~50MB) | `data/metabric/` | Mutations + mRNA z-scores + clinical |
 | Pharmacology | PharmGKB clinical annotations | `data/pharmgkb/` | Drug-gene associations |
@@ -87,6 +87,28 @@ Tissue: peripheral blood
 - Oxidative/mitochondrial (22 genes): SOD2, GPX1, SIRT1, UCP2, NFE2L2...
 
 Processing script: `scripts/process_transcriptomics.py`
+
+### Diabetes Metabolomics Dataset (`data/metabolomics/`)
+
+Source: [Metabolomics Workbench ST001906](https://www.metabolomicsworkbench.org/data/DRCCMetadata.php?Mode=Study&StudyID=ST001906) — fasting plasma metabolomics
+Platform: GC-MS/MS (Shimadzu TQ8040)
+
+| File | Description |
+|------|-------------|
+| `raw/ST001906_raw.txt` | Raw tab-separated data from REST API (61 samples × 78 metabolites) |
+| `raw/diabetes_metabolomics.csv` | Processed: 61 samples × 86 features (78 metabolites + 5 pathway scores + 3 metadata) |
+
+Samples: 30 control, 31 Type 2 diabetes
+Sample type: fasting blood plasma
+
+78 named metabolites curated across 5 diabetes-relevant metabolic pathway panels:
+- Amino acid (23 metabolites): BCAAs (Leu/Ile/Val), aromatic AAs (Phe/Tyr/Trp), Glu, Gly...
+- Carbohydrate (14 metabolites): Glucose, Fructose, Mannose, 1,5-Anhydroglucitol, Inositol...
+- Lipid (12 metabolites): Cholesterol, Oleate, Palmitate, Stearate, Linoleate...
+- TCA/Energy (9 metabolites): Citrate, Pyruvate, Lactate, Succinate, Malate...
+- Ketone/Oxidative (8 metabolites): 3-Hydroxybutyrate, 2-Hydroxybutyrate, Urate, Creatinine...
+
+Processing script: `scripts/process_metabolomics.py`
 
 ## Patient Cases
 

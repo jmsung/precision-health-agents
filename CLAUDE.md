@@ -1,15 +1,15 @@
 # BioAI
 
-Multi-agent healthcare intelligence system — 8 specialized agents analyze patient data and synthesize personalized health assessments with 3-layer validation (DNA + clinical + molecular).
+Multi-agent healthcare intelligence system — 9 specialized agents analyze patient data and synthesize personalized health assessments with 4-layer validation (DNA + clinical + transcriptomics + metabolomics).
 
 ## Project Structure
 
 ```
 bioai/
 ├── src/bioai/           # Shared package (agents, tools, eval, orchestrator)
-├── scripts/             # Entry points (run.py, evaluate.py, process_transcriptomics.py)
+├── scripts/             # Entry points (run.py, evaluate.py, process_transcriptomics.py, process_metabolomics.py)
 ├── app/                 # Streamlit eval dashboard
-├── tests/               # Tests (mirror src/ structure, 90 tests)
+├── tests/               # Tests (mirror src/ structure, 196 tests)
 ├── docs/                # Knowledge DB (architecture, vision, data, demo)
 ├── data/                # Datasets (gitignored)
 ├── mb_<dev>/            # Per-developer memory banks (gitignored)
@@ -31,6 +31,8 @@ bioai/
 - [docs/demo.md](docs/demo.md) — Demo plan, dashboard, priorities
 - [docs/doctor_agent.md](docs/doctor_agent.md) — Doctor agent design, API, output models
 - [docs/genomics.md](docs/genomics.md) — Genomics agent, CNN model, pipeline
+- [docs/metabolomics.md](docs/metabolomics.md) — Metabolomics agent, ST001906, metabolic profiling
+- [docs/hospital.md](docs/hospital.md) — Hospital agent, molecular test coordination
 
 ## Current Focus
 
@@ -51,7 +53,7 @@ bioai/
 
 ```bash
 uv sync                                      # Install dependencies
-uv run pytest                                # Run tests (90 tests)
+uv run pytest                                # Run tests (196 tests)
 uv run python scripts/run.py --case 1        # Run pipeline on a case
 uv run python scripts/evaluate.py            # Real eval (agents + judge via API)
 uv run python scripts/evaluate.py --mock     # Mock eval (pre-recorded outputs)

@@ -1,4 +1,4 @@
-"""End-to-end integration tests for the 5 pipeline scenarios.
+"""End-to-end integration tests for the 7 pipeline scenarios.
 
 Each test simulates a full patient journey through the multi-agent system,
 with all agents mocked at the Anthropic API level while real tools execute.
@@ -14,6 +14,10 @@ Scenarios (based on whether diabetes is confirmed or not):
      Two-layer confirmed: awaiting transcriptomics (hospital pathway entry).
   5. DNA(DMT2) -> Doctor(Diabetic) -> Transcriptomics(CONFIRMED) -> Pharmacology (full pipeline)
      Complete 4-agent pipeline with medication recommendation.
+  6. DNA(DMT2) -> Doctor(Diabetic) -> Hospital(consent + both confirm) -> Pharmacology
+     Full 5-agent pipeline with hospital coordinating transcriptomics + metabolomics.
+  7. DNA(DMT2) -> Doctor(Diabetic) -> Hospital(consent + neither confirms) -> HealthTrainer
+     Hospital pathway catches false positive via combined molecular tests.
 """
 
 import asyncio
@@ -22,10 +26,12 @@ from unittest.mock import MagicMock, patch
 from bioai.agents.doctor import DoctorAgent
 from bioai.agents.genomics import GenomicsAgent
 from bioai.agents.health_trainer import HealthTrainerAgent
+from bioai.agents.hospital import HospitalAgent
 from bioai.agents.pharmacology import PharmacologyAgent
 from bioai.agents.transcriptomics import TranscriptomicsAgent
-from bioai.models import AgentStatus, PharmacologyFindings, Recommendation, RiskLevel
+from bioai.models import AgentStatus, HospitalRecommendation, PharmacologyFindings, Recommendation, RiskLevel
 from bioai.tools.gene_expression_analyzer import PATHWAY_GENES, _get_reference_stats
+from bioai.tools.metabolic_profile_analyzer import _get_reference_stats as _get_metab_ref
 
 
 # ---------------------------------------------------------------------------
@@ -563,4 +569,212 @@ def test_pipeline_full_four_agent_to_medication():
     print(f"  Layer 2 (Clinical):       Diabetic -> clinical risk confirmed")
     print(f"  Layer 3 (Transcriptomics): {subtype} -> molecular confirmation")
     print(f"  Layer 4 (Pharmacology):   {total_meds} medications recommended")
+    print("=" * 70)
+
+
+# ---------------------------------------------------------------------------
+# Helper: build metabolite data
+# ---------------------------------------------------------------------------
+
+def _build_elevated_metabolites() -> dict[str, float]:
+    """Build metabolite levels 3 std above mean for key diabetes markers."""
+    ref = _get_metab_ref()
+    levels = {}
+    for m in ["Glucose", "Fructose", "Mannose", "Leucine", "Isoleucine",
+              "Valine", "Cholesterol", "Palmitate", "Lactate", "3-Hydroxybutyrate"]:
+        mean, std = ref[m]
+        levels[m] = mean + 3 * std
+    return levels
+
+
+def _build_normal_metabolites() -> dict[str, float]:
+    """Build metabolite levels at reference mean (no dysregulation)."""
+    ref = _get_metab_ref()
+    return {m: mean for m, (mean, _) in ref.items()}
+
+
+# ---------------------------------------------------------------------------
+# Helper: run hospital agent
+# ---------------------------------------------------------------------------
+
+def _run_hospital(gene_expression: dict, metabolite_levels: dict, context: dict, consent: bool = True):
+    """Run mocked HospitalAgent through consent + tests flow."""
+    with patch("bioai.agents.hospital.anthropic.Anthropic"):
+        agent = HospitalAgent(context=context)
+        agent._client = MagicMock()
+
+        # Turn 1: agent explains tests
+        agent._client.messages.create.side_effect = [
+            _mock_text(
+                "Your genetic and clinical results suggest diabetes risk. "
+                "I'd like to run blood tests for molecular confirmation. "
+                "This involves a gene expression panel and a metabolic profile. "
+                "Would you be willing to do these tests?"
+            ),
+        ]
+        reply = agent.chat("I've been referred to the hospital. What happens next?")
+
+        # Turn 2: patient consents -> tool call -> final response
+        agent._client.messages.create.side_effect = [
+            _mock_tool_use("run_hospital_tests", {
+                "consent": consent,
+                "gene_expression": gene_expression,
+                "metabolite_levels": metabolite_levels,
+            }),
+            _mock_text(
+                "Your test results are in. Let me explain what we found."
+            ),
+        ]
+        reply = agent.chat("Yes, I'm willing to do the blood tests." if consent else "No, I'd rather not.")
+
+        return agent, agent.result()
+
+
+# ===========================================================================
+# Test 6: Full 5-agent pipeline — DNA -> Doctor -> Hospital (Trans+Metab)
+#          -> Pharmacology (complete with patient consent and molecular tests)
+# ===========================================================================
+
+def test_pipeline_hospital_confirmed_to_pharmacology():
+    """DMT2 DNA + Diabetic clinical -> Hospital (patient consents, both molecular
+    tests confirm) -> Pharmacology delivers medication plan.
+
+    This is the full patient journey:
+    1. DNA analysis detects DMT2 risk
+    2. Doctor conversation confirms clinical diabetes
+    3. Hospital specialist explains tests, patient consents
+    4. Transcriptomics + metabolomics both confirm active diabetes
+    5. Pharmacology delivers personalized medication plan
+    """
+
+    print("\n" + "=" * 70)
+    print("TEST 6: Full 5-Agent Pipeline — Hospital Coordinates Molecular Tests")
+    print("=" * 70)
+
+    # Step 1: Genomics — DMT2 detected
+    genomics_result = _run_genomics("DMT2", 0.90)
+    assert genomics_result.status == AgentStatus.SUCCESS
+    assert genomics_result.findings.predicted_class == "DMT2"
+    print(f"[Genomics] DMT2 detected ({genomics_result.findings.confidence:.0%})")
+
+    # Step 2: Doctor — Diabetic confirmed, recommends hospital
+    _, doctor_result = _run_doctor(_CLINICAL_DIABETIC, "Diabetic", 0.80)
+    assert doctor_result.findings.recommendation == Recommendation.HOSPITAL
+    print(f"[Doctor] Diabetic ({doctor_result.findings.probability:.0%}) -> Hospital")
+
+    # Step 3: Hospital — patient consents, both tests confirm
+    context = {
+        "genomics": {"predicted_class": "DMT2", "confidence": 0.90},
+        "doctor": {"prediction": "Diabetic", "probability": 0.80},
+    }
+    gene_expr = _build_gene_expression(["inflammation_immune", "insulin_resistance"])
+    metab = _build_elevated_metabolites()
+
+    hospital_agent, hospital_result = _run_hospital(gene_expr, metab, context)
+
+    assert hospital_result.status == AgentStatus.SUCCESS
+    assert hospital_result.findings.patient_consented is True
+    assert hospital_result.findings.transcriptomics_confirmed is True
+    assert hospital_result.findings.metabolomics_confirmed is True
+    assert hospital_result.findings.diabetes_confirmed is True
+    assert hospital_result.findings.confidence == "high"
+    assert hospital_result.findings.recommendation == HospitalRecommendation.PHARMACOLOGY
+    print(f"[Hospital] Patient consented -> tests run")
+    print(f"  Transcriptomics: confirmed={hospital_result.findings.transcriptomics_confirmed}")
+    print(f"  Metabolomics: confirmed={hospital_result.findings.metabolomics_confirmed}")
+    print(f"  Combined: CONFIRMED (confidence: {hospital_result.findings.confidence})")
+    print(f"  -> Recommend: {hospital_result.findings.recommendation.value}")
+
+    # Step 4: Pharmacology — medication plan
+    pharma_context = {
+        "genomics": genomics_result.model_dump(),
+        "doctor": doctor_result.model_dump(),
+        "hospital": hospital_result.model_dump(),
+        "transcriptomics": {
+            "findings": hospital_result.findings.transcriptomics_summary,
+        },
+    }
+    pharma_result = _run_pharmacology(pharma_context)
+
+    assert pharma_result.status == AgentStatus.SUCCESS
+    assert isinstance(pharma_result.findings, PharmacologyFindings)
+    total_meds = len(pharma_result.findings.primary_medications) + len(pharma_result.findings.supportive_medications)
+    assert total_meds > 0
+    print(f"[Pharmacology] {total_meds} medications recommended")
+
+    print("\n[Summary] Full 5-agent pipeline complete:")
+    print(f"  Layer 1 (DNA):            DMT2 -> genetic risk confirmed")
+    print(f"  Layer 2 (Clinical):       Diabetic -> clinical risk confirmed")
+    print(f"  Layer 3 (Hospital):       Patient consented -> blood tests run")
+    print(f"    Transcriptomics:        CONFIRMED")
+    print(f"    Metabolomics:           CONFIRMED")
+    print(f"  Layer 4 (Pharmacology):   {total_meds} medications recommended")
+    print("=" * 70)
+
+
+# ===========================================================================
+# Test 7: Hospital false positive — DNA+Doctor say diabetes, but molecular
+#          tests both negative -> HealthTrainer
+# ===========================================================================
+
+def test_pipeline_hospital_false_positive_to_health_trainer():
+    """DMT2 DNA + Diabetic clinical -> Hospital (patient consents, but neither
+    molecular test confirms) -> false positive -> Health Trainer.
+
+    Hospital pathway catches false positives by requiring molecular confirmation
+    from both transcriptomics and metabolomics before prescribing drugs.
+    """
+
+    print("\n" + "=" * 70)
+    print("TEST 7: Hospital False Positive — Molecular Tests Negative -> Trainer")
+    print("=" * 70)
+
+    # Step 1: Genomics — DMT2 detected
+    genomics_result = _run_genomics("DMT2", 0.85)
+    assert genomics_result.findings.predicted_class == "DMT2"
+    print(f"[Genomics] DMT2 detected ({genomics_result.findings.confidence:.0%})")
+
+    # Step 2: Doctor — Diabetic
+    _, doctor_result = _run_doctor(_CLINICAL_DIABETIC, "Diabetic", 0.76)
+    assert doctor_result.findings.recommendation == Recommendation.HOSPITAL
+    print(f"[Doctor] Diabetic ({doctor_result.findings.probability:.0%}) -> Hospital")
+
+    # Step 3: Hospital — patient consents, but tests are NORMAL
+    context = {
+        "genomics": {"predicted_class": "DMT2", "confidence": 0.85},
+        "doctor": {"prediction": "Diabetic", "probability": 0.76},
+    }
+    gene_expr = _build_normal_gene_expression()
+    metab = _build_normal_metabolites()
+
+    hospital_agent, hospital_result = _run_hospital(gene_expr, metab, context)
+
+    assert hospital_result.findings.patient_consented is True
+    assert hospital_result.findings.transcriptomics_confirmed is False
+    assert hospital_result.findings.metabolomics_confirmed is False
+    assert hospital_result.findings.diabetes_confirmed is False
+    assert hospital_result.findings.recommendation == HospitalRecommendation.HEALTH_TRAINER
+    print(f"[Hospital] Patient consented -> tests run")
+    print(f"  Transcriptomics: NOT confirmed")
+    print(f"  Metabolomics: NOT confirmed")
+    print(f"  Combined: FALSE POSITIVE -> Health Trainer")
+
+    # Step 4: Health Trainer — lifestyle management
+    ht_context = {
+        **context,
+        "hospital": {
+            "diabetes_confirmed": False,
+            "recommendation": "health_trainer",
+        },
+    }
+    ht_result = _run_health_trainer(ht_context)
+    assert ht_result.status == AgentStatus.SUCCESS
+    assert ht_result.findings is not None
+    print(f"[HealthTrainer] Exercise plan delivered")
+
+    print("\n[Summary] Hospital caught false positive:")
+    print(f"  Layer 1 (DNA):            DMT2 -> genetic risk (could be carrier)")
+    print(f"  Layer 2 (Clinical):       Diabetic -> borderline clinical")
+    print(f"  Layer 3 (Hospital):       NEGATIVE — no molecular evidence")
+    print(f"  Decision:                 Lifestyle management, no drugs")
     print("=" * 70)

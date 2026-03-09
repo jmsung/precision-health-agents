@@ -148,9 +148,10 @@ The agent accepts `context: dict` with prior agent findings:
 
 These are injected into the system prompt so the LLM can contextualize the transcriptomic findings.
 
-**Output flows to**:
-- If `recommendation == "pharmacology"` → PharmacologyAgent (subtype + complication risks → personalized medication plan from 16-drug ADA guideline database)
-- If `recommendation == "health_trainer"` → Health Trainer (false positive — lifestyle intervention, no drugs)
+**Output flows to** (via HospitalAgent):
+- The TranscriptomicsAgent no longer routes directly. Instead, HospitalAgent runs both transcriptomics and metabolomics, combines their `diabetes_confirmed` decisions, then routes:
+  - Both/either confirm → PharmacologyAgent (subtype + complication risks → personalized medication plan)
+  - Neither confirms → Health Trainer (false positive — lifestyle intervention, no drugs)
 
 ## Tests
 

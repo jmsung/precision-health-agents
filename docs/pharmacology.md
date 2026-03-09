@@ -2,12 +2,12 @@
 
 ## Overview
 
-The Pharmacology Agent is the **4th and final agent** in the diabetes pipeline. After 3-layer validation (DNA + clinical + transcriptomics) confirms diabetes, it recommends personalized medications based on the patient's molecular subtype and complication risks. The agent is kind, supportive, and informative — explaining each medication choice in plain language.
+The Pharmacology Agent is the **final agent** in the diabetes pipeline. After 4-layer validation (DNA + clinical + transcriptomics + metabolomics, coordinated by the Hospital Agent) confirms diabetes, it recommends personalized medications based on the patient's molecular subtype and complication risks. The agent is kind, supportive, and informative — explaining each medication choice in plain language.
 
 ## Pipeline
 
 ```
-TranscriptomicsFindings (confirmed diabetes)
+HospitalFindings (confirmed diabetes via transcriptomics + metabolomics)
         |
   PharmacologyAgent.chat()
         |
@@ -150,8 +150,9 @@ The PharmacologyAgent is designed to be:
 - `tests/test_pharmacology_agent.py` — 10 tests
   - Context building (no context, transcriptomics, full context)
   - Agent flow (tool call + text, findings population, result status)
-- `tests/test_integration_pipeline.py` — test 2 + test 5
+- `tests/test_integration_pipeline.py` — test 2, 5, 6
   - Full 4-agent pipeline: DNA -> Doctor -> Transcriptomics -> Pharmacology
+  - Full 5-agent pipeline: DNA -> Doctor -> Hospital (Trans+Metab) -> Pharmacology
 
 ## Files
 

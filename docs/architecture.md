@@ -25,46 +25,48 @@ Patient
    |  +---------------------------------+
    |  |  HOSPITAL PATHWAY
    |  |
-   |  +--- Gene Expression --> [Transcriptomics Agent]
-   |  |                              |
-   |  |                    analyze_gene_expression (110-gene panel)
-   |  |                    -> 5 pathway scores (beta cell, inflammation,
-   |  |                       insulin resistance, fibrosis, oxidative)
-   |  |                    -> Diabetes subtype (inflammation_dominant /
-   |  |                       beta_cell_failure / metabolic_insulin_resistant /
-   |  |                       fibrotic_complication / mixed)
-   |  |                    -> Complication risks (kidney, CV, neuropathy)
-   |  |                    -> Monitoring level (actionable/monitoring/exploratory)
-   |  |                    -> Diabetes confirmed? (false positive filter)
-   |  |                              |
-   |  |                    +--------+--------+
-   |  |                 Confirmed         NOT confirmed
-   |  |                 (pathways          (no pathway
-   |  |                  active)            activation)
-   |  |                    |                    |
-   |  +--- Subtype --> [Pharmacology Agent]   Health Trainer
-   |                        |                (false positive --
-   |                        |                 no drugs needed)
-   |                  recommend_medications (16-drug ADA guideline DB)
-   |                  -> Score by subtype match + complication benefit
-   |                  -> Contraindication filtering
-   |                  -> Personalized medication plan
-   |                  -> Monitoring schedule
-   |
+   |  +--- [Hospital Agent] — coordinates molecular tests
+   |  |         |
+   |  |    Explains tests to patient, gets consent
+   |  |         |
+   |  |    run_hospital_tests(consent, gene_expression, metabolite_levels)
+   |  |         |
+   |  |    +----+----+  (runs both in parallel)
+   |  |    |         |
+   |  |  [Transcriptomics]        [Metabolomics]
+   |  |  analyze_gene_expression   analyze_metabolic_profile
+   |  |  (110-gene panel,          (78 metabolites, 5 pathways:
+   |  |   5 pathways: beta cell,    amino acid, carbohydrate,
+   |  |   inflammation, insulin     lipid, TCA/energy,
+   |  |   resistance, fibrosis,     ketone/oxidative)
+   |  |   oxidative)               -> insulin resistance score
+   |  |  -> subtype, risks         -> metabolic pattern
+   |  |    |         |
+   |  |    +----+----+
+   |  |         |
+   |  |    Combined decision:
+   |  |    Both confirm = high confidence
+   |  |    One confirms = moderate confidence
+   |  |    Neither confirms = false positive
+   |  |         |
+   |  |    +----+----+
+   |  |  Confirmed     NOT confirmed
+   |  |    |                |
+   |  +--- | --> [Pharmacology Agent]   Health Trainer
+   |       |          |                (false positive --
+   |       |          |                 no drugs needed)
+   |       |    recommend_medications (16-drug ADA guideline DB)
+   |       |    -> Score by subtype match + complication benefit
+   |       |    -> Contraindication filtering
+   |       |    -> Personalized medication plan
+   |       |    -> Monitoring schedule
+   |       |
    |  +--- (HOSPITAL, parallel) --> [Proteomics Agent]
    |  |                                    |
    |  |                    analyze_protein_biomarkers (inflammatory, signaling,
    |  |                       kidney/CV injury markers)
    |  |                    -> Functional biomarker confirmation
    |  |                    -> Complication risk from protein-level evidence
-   |  |
-   |  +--- (HOSPITAL, parallel) --> [Metabolomics Agent]
-   |  |                                    |
-   |  |                    analyze_metabolic_profile (lipids, BCAAs,
-   |  |                       acylcarnitines, organic acids)
-   |  |                    -> Current metabolic state
-   |  |                    -> Insulin resistance signals
-   |  |                    -> Subtype refinement from metabolic patterns
    |  |
    +--- (HEALTH_TRAINER) --> [Health Trainer Agent]
    |                              |
@@ -120,9 +122,10 @@ Genomics       Transcriptomics       Proteomics       Metabolomics
 | **Genomics** | `classify_dna` | Pre-trained 2-layer CNN (3-mer tokenization) | Inherited risk: DMT1/DMT2/NONDM |
 | **Doctor** | `classify_diabetes` | Pre-trained MLP (8 clinical features) | Conversational intake → hospital/health trainer routing |
 | **Health Trainer** | `classify_workout_type`, `recommend_exercises` | ADA 2023 clinical rules + 50-exercise DB | Exercise prescription for HEALTH_TRAINER referrals |
+| **Hospital** | `run_hospital_tests` | Coordinates transcriptomics + metabolomics, combines confirmation | Patient consent → blood tests → combined molecular decision |
 | **Transcriptomics** | `analyze_gene_expression` | GSE26168 reference + z-score pathway scoring (110 genes, 5 pathways) | 3rd validation layer: confirms/rejects diabetes, subtype, complication risks |
 | **Proteomics** | `analyze_protein_biomarkers` | TBD (YH in progress) | Functional biomarkers: inflammatory/signaling proteins, kidney/CV injury markers |
-| **Metabolomics** | `analyze_metabolic_profile` | TBD (YH in progress) | Current metabolic state: insulin resistance, lipid dysregulation, BCAA/acylcarnitine patterns |
+| **Metabolomics** | `analyze_metabolic_profile` | ST001906 reference + z-score pathway scoring (78 metabolites, 5 pathways) | Current metabolic state: insulin resistance, lipid dysregulation, BCAA patterns |
 | **Pharmacology** | `recommend_medications` | ADA guideline DB (16 drugs × 8 classes) + scoring engine | Subtype-informed medication selection with complication-aware ranking |
 | **Clinical** | `lookup_guidelines`, `check_screening_criteria` | JSON knowledge base | Evidence-based guideline interpretation (stub) |
 | **Literature** | `search_pubmed`, `search_semantic_scholar` | Biopython Entrez, semanticscholar | Latest research on DNA-matched treatment (stub) |
@@ -152,6 +155,38 @@ Recommendation logic (combined with genomics):
 | DMT1 or DMT2 | Non-Diabetic | -> Hospital (genetic override -- early intervention) |
 | NONDM | Diabetic | -> Reconsider (may not need drugs) |
 | NONDM | Non-Diabetic | -> Health trainer (prevention) |
+
+### Hospital Agent: Molecular Test Coordination
+
+When a patient is routed to Hospital, the Hospital Agent manages the patient interaction and coordinates molecular tests:
+
+```
+Patient referred to hospital (DNA + Clinical both positive)
+        |
+  HospitalAgent.chat()
+        |
+  Explains need for blood tests (transcriptomics + metabolomics)
+        |
+  Patient consents? --NO--> health_trainer (can't confirm without tests)
+        |
+       YES
+        |
+  run_hospital_tests(consent, gene_expression, metabolite_levels)
+        |
+  +-----+-----+  (runs both analyses)
+  |           |
+  analyze_gene_expression    analyze_metabolic_profile
+  (transcriptomics)          (metabolomics)
+  |           |
+  +-----+-----+
+        |
+  Combined decision:
+    Both confirm    -> diabetes_confirmed=True,  confidence="high"
+    One confirms    -> diabetes_confirmed=True,  confidence="moderate"
+    Neither confirms -> diabetes_confirmed=False (false positive)
+        |
+  HospitalFindings -> Pharmacology (confirmed) or HealthTrainer (false positive)
+```
 
 ### Transcriptomics Agent: Hospital Pathway Analysis
 
@@ -274,7 +309,7 @@ Cost: ~$0.15/run. Budget: ~$5-10 for hackathon.
 ```
 src/bioai/
 ├── config.py                  Pydantic settings (models, API keys, paths)
-├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, ProteomicsFindings, MetabolomicsFindings, PharmacologyFindings, HealthTrainerFindings
+├── models.py                  AgentResult, GenomicsFindings, DoctorFindings, TranscriptomicsFindings, ProteomicsFindings, MetabolomicsFindings, HospitalFindings, PharmacologyFindings, HealthTrainerFindings
 ├── blackboard.py              Shared state for agent communication
 ├── orchestrator.py            2-phase: parallel agents → synthesis
 ├── agents/
@@ -285,7 +320,8 @@ src/bioai/
 │   ├── transcriptomics.py     Gene expression pathway analysis + subtype + false positive filter
 │   ├── pharmacology.py        ADA guideline medication recommendation
 │   ├── proteomics.py          Protein biomarker analysis (tool-use loop, scaffold for YH)
-│   ├── metabolomics.py        Metabolic profile analysis (tool-use loop, scaffold for YH)
+│   ├── hospital.py            Molecular test coordination (consent → trans+metab → decision)
+│   ├── metabolomics.py        Metabolic profile analysis (tool-use loop)
 │   ├── clinical.py            Guidelines knowledge base (stub)
 │   └── literature.py          PubMed, Semantic Scholar (stub)
 ├── tools/
@@ -295,12 +331,13 @@ src/bioai/
 │   ├── exercise_recommender.py        50-exercise CSV lookup
 │   ├── gene_expression_analyzer.py    GSE26168 z-score: gene profile → pathways/subtype/risks
 │   ├── protein_biomarker_analyzer.py  Protein biomarker analysis (stub for YH)
-│   ├── metabolic_profile_analyzer.py  Metabolic profile analysis (stub for YH)
+│   ├── metabolic_profile_analyzer.py  ST001906 z-score: metabolite profile → pathways/IR score/pattern
 │   └── drug_recommender.py            ADA guideline medication scoring + recommendation
 ├── prompts/                   System prompts as .txt (Ralph Loop edits these)
 │   ├── genomics.txt
 │   ├── doctor.txt
 │   ├── health_trainer.txt
+│   ├── hospital.txt
 │   ├── transcriptomics.txt
 │   ├── proteomics.txt
 │   ├── metabolomics.txt

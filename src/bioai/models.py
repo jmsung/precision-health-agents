@@ -90,6 +90,23 @@ class MetabolomicsFindings(BaseModel):
     interpretation: str
 
 
+class HospitalRecommendation(str, Enum):
+    PHARMACOLOGY = "pharmacology"
+    HEALTH_TRAINER = "health_trainer"
+
+
+class HospitalFindings(BaseModel):
+    patient_consented: bool
+    transcriptomics_confirmed: bool
+    metabolomics_confirmed: bool
+    diabetes_confirmed: bool
+    confidence: str  # "high" | "moderate" | "low"
+    recommendation: HospitalRecommendation
+    transcriptomics_summary: dict[str, Any]
+    metabolomics_summary: dict[str, Any]
+    reasoning: str
+
+
 class PharmacologyFindings(BaseModel):
     diabetes_subtype: str
     primary_medications: list[dict[str, Any]]
@@ -108,7 +125,7 @@ class HealthTrainerFindings(BaseModel):
 class AgentResult(BaseModel):
     agent: str
     status: AgentStatus
-    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | ProteomicsFindings | MetabolomicsFindings | PharmacologyFindings | HealthTrainerFindings | None = None
+    findings: GenomicsFindings | DoctorFindings | TranscriptomicsFindings | ProteomicsFindings | MetabolomicsFindings | HospitalFindings | PharmacologyFindings | HealthTrainerFindings | None = None
     summary: str
     error: str | None = None
 

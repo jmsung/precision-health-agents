@@ -54,12 +54,23 @@ We show two patients with the same clinical reading — and completely different
 - DNA: NONDM (no genetic predisposition)
 - Decision: → **Health Trainer** (clinical positive, but not genetically predisposed — lifestyle first)
 
-### Case 4 — Transcriptomics False Positive Filter
+### Case 4 — Hospital Molecular Tests (4-Layer Validation)
 - Clinical: glucose=155, BMI=30 (looks diabetic)
 - DNA: DMT2 (high confidence)
 - Genomics + Doctor → **Hospital** (confirmed)
-- Transcriptomics: Gene expression shows **no diabetes pathway activation** (all z-scores near 0)
-- Decision: → **Health Trainer** (false positive — molecular evidence doesn't support diabetes, avoid unnecessary drugs)
+- Hospital Agent: explains blood tests needed, patient consents
+- Transcriptomics: inflammation + insulin resistance pathways active → **CONFIRMED**
+- Metabolomics: elevated BCAAs, glucose, lipids → insulin resistance score 0.82 → **CONFIRMED**
+- Combined: both confirm → high confidence → **Pharmacology**
+
+### Case 5 — Hospital False Positive Filter (4-Layer Catches It)
+- Clinical: glucose=155, BMI=30 (looks diabetic)
+- DNA: DMT2 (high confidence)
+- Genomics + Doctor → **Hospital** (confirmed)
+- Hospital Agent: explains blood tests needed, patient consents
+- Transcriptomics: **no pathway activation** (all z-scores near 0)
+- Metabolomics: **normal metabolic profile** (IR score ~0.5)
+- Combined: neither confirms → false positive → **Health Trainer** (no unnecessary drugs)
 
 ### Case 5 — Type 1 vs Type 2 Drug Differentiation
 - Two patients, same clinical profile
@@ -79,7 +90,7 @@ We show two patients with the same clinical reading — and completely different
 - [ ] Streamlit: Patient Intake + DNA Analysis + Decision tabs
 
 ### P1 — Should Have
-- [ ] Pharmacology Agent — DNA-matched drug recommendations
+- [x] Pharmacology Agent — DNA-matched drug recommendations
 - [x] Evaluation framework with LLM-as-judge (13/13 pass, 3 agents evaluated)
 - [x] Ralph Loop (3 iterations — improved health_trainer + doctor prompts)
 - [ ] Case 3 (clinical override) fully demonstrated in dashboard
@@ -87,7 +98,8 @@ We show two patients with the same clinical reading — and completely different
 ### P2 — Nice to Have
 - [x] Transcriptomics Agent — pathway activity, confirms/rejects diabetes
 - [ ] Proteomics Agent — functional biomarkers (inflammatory/signaling proteins, kidney/CV injury) — YH in progress
-- [ ] Metabolomics Agent — current metabolic state (insulin resistance, lipid/BCAA patterns) — YH in progress
+- [x] Metabolomics Agent — current metabolic state (insulin resistance, lipid/BCAA patterns)
+- [x] Hospital Agent — coordinates molecular tests (consent → transcriptomics + metabolomics → combined decision)
 - [ ] Remaining agents (Literature, Clinical Guidelines)
 - [ ] Streamlit Ralph Loop tab
 - [x] All 4 demo cases pre-cached (mock outputs saved)

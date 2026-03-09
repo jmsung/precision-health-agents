@@ -36,34 +36,43 @@ This is the core value of precision medicine: the right decision, for the right 
 ## The Multi-Omics Validation Flow
 
 ```
-[Genomics]              [Doctor]                [Transcriptomics]
-  DNA sequence            Clinical conversation    Gene expression
-       |                       |                        |
-  DMT1 / DMT2 / NONDM    Diabetic / Non-Diabetic   5 pathway scores
-       |                       |                        |
-       +-----------+-----------+                        |
-                   |                                    |
-           [Initial Decision]                           |
-                   |                                    |
-       +----------+----------+                          |
-  High genetic risk      No genetic risk                |
-  + clinical positive                                   |
-       |                                                |
-  Go to hospital                                        |
-       |                                                |
-       +------------------------------------------------+
+[Genomics]              [Doctor]
+  DNA sequence            Clinical conversation
+       |                       |
+  DMT1 / DMT2 / NONDM    Diabetic / Non-Diabetic
+       |                       |
+       +-----------+-----------+
+                   |
+           [Initial Decision]
+                   |
+       +----------+----------+
+  High genetic risk      No genetic risk
+  + clinical positive     → Health Trainer
        |
-  [Molecular Confirmation]
+  Go to hospital
+       |
+  [Hospital Agent]
+  "We need blood tests to confirm. Are you willing?"
+       |
+  Patient consents
+       |
+  +----+----+  (runs both in parallel)
+  |         |
+[Transcriptomics]    [Metabolomics]
+  110-gene panel       78 metabolites
+  5 pathway scores     5 pathway scores
+  subtype + risks      IR score + pattern
+  |         |
+  +----+----+
+       |
+  [Combined Molecular Confirmation]
+  Both confirm → high confidence
+  One confirms → moderate confidence
+  Neither → false positive
        |
   +----+----+
 Confirmed    NOT confirmed ──→ Health Trainer
-       |
-       +──→ [Proteomics]           [Metabolomics]
-       |     inflammatory/          insulin resistance,
-       |     signaling proteins,    lipid/BCAA patterns,
-       |     kidney/CV markers      metabolic subtyping
-       |            |                      |
-       +------------+----------------------+
+       |                       (no drugs needed)
        |
   [Pharmacology] ──→ subtype-informed drug plan
 ```
@@ -95,7 +104,8 @@ Giving a Type 2 drug to a Type 1 patient, or vice versa, is at best ineffective 
 | **Doctor** | Conversational clinical intake → diabetes probability → hospital/health trainer routing |
 | **Transcriptomics** | Pathway activity — confirms/rejects diabetes, subtype, complication risks |
 | **Proteomics** | Functional biomarkers — inflammatory/signaling proteins, kidney/CV injury markers |
-| **Metabolomics** | Current metabolic state — insulin resistance, lipid dysregulation, BCAA/acylcarnitine patterns |
+| **Metabolomics** | Current metabolic state — insulin resistance, lipid dysregulation, BCAA patterns |
+| **Hospital** | Coordinates molecular tests — patient consent, runs transcriptomics + metabolomics, combined decision |
 | **Pharmacology** | Drug-gene interaction reasoning — subtype-informed drug recommendations |
 | **Clinical Guidelines** | Evidence-based guideline interpretation |
 | **Literature Review** | Latest research on DNA-matched diabetes treatment |
